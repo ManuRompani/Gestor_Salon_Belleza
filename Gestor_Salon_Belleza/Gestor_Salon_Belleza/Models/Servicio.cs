@@ -23,5 +23,8 @@ namespace Gestor_Salon_Belleza.Models
         [Range(0.01, 999999, ErrorMessage = "El precio debe ser mayor a 0")]
         public decimal Precio { get; set; }
 
+        public ICollection<Profesional_Servicio> Profesional_Servicios { get; set; }
+        public ICollection<Turno> Turnos { get; set; }
+
     }
 }
