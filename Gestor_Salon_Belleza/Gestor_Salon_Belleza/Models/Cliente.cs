@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gestor_Salon_Belleza.Models
 {
     public class Cliente
     {
-
+        [Key]
         [ForeignKey("Usuario")]
         public int Id_Usuario { get; set; } 
         public string? Notas { get; set; }

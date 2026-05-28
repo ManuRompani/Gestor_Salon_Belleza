@@ -44,6 +44,21 @@ namespace Gestor_Salon_Belleza.Data
 
             modelBuilder.Entity<Turno_Servicio>()
                 .HasKey(ts => new { ts.Id_Turno, ts.Id_Servicio });
+
+
+            modelBuilder.Entity<Turno>() // rel entre turno y cliente
+                        .HasOne(t => t.Cliente)  // un turno tiene un cliente
+                        .WithMany(c => c.Turnos) // un cliente puede tener muchos turnos
+                        .HasForeignKey(t => t.Id_Cliente) // la fk es Id_Cliente en turno
+                        .OnDelete(DeleteBehavior.NoAction); // evito eliminacion en cascada
+
+            modelBuilder.Entity<Turno>()
+                        .HasOne(t => t.Profesional)
+                        .WithMany(c => c.Turnos) 
+                        .HasForeignKey(t => t.Id_Profesional) 
+                        .OnDelete(DeleteBehavior.NoAction);
         }
+
+        
     }
 }
