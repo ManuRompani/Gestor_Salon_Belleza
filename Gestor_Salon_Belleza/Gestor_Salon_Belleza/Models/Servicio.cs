@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Gestor_Salon_Belleza.Models
 {
@@ -17,9 +18,10 @@ namespace Gestor_Salon_Belleza.Models
 
         [Required(ErrorMessage = "Campo Requerido")]
         [Range(1, 480, ErrorMessage = "Entre 1 y 480 minutos")]
-        public decimal Duracion_Minutos { get; set; }
+        public int Duracion_Minutos { get; set; }
 
         [Required(ErrorMessage = "Campo Requerido")]
+        [Precision(10, 2)]
         [Range(0.01, 999999, ErrorMessage = "El precio debe ser mayor a 0")]
         public decimal Precio { get; set; }
 
