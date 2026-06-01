@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gestor_Salon_Belleza.Models
 {
@@ -22,15 +23,17 @@ namespace Gestor_Salon_Belleza.Models
         [Phone(ErrorMessage = "Teléfono inválido")]
         public string Telefono { get; set; }
         [Required(ErrorMessage = "Campo Requerido")]
-        [StringLength(100, MinimumLength = 8, ErrorMessage = "Mínimo 6 caracteres")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Mínimo 8 caracteres")]
         public string Password { get; set; }
         
 
         public bool Eliminado { get; set; }
 
         [Required]
+        [ForeignKey(nameof(Rol))]
         public int Id_Rol { get; set; }
 
+        
         public Rol Rol { get; set; }
     }
 }
