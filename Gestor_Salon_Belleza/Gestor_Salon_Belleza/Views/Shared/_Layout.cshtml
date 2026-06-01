@@ -10,7 +10,7 @@
 <body>
     <header class="header">
         <div class="logo">
-            <a href="#">Glow &amp; Style</a>
+            <a asp-controller="Home" asp-action="Index">Glow &amp; Style</a>
         </div>
 
         <input type="checkbox" id="menu-toggle" class="menu-checkbox">
@@ -23,9 +23,9 @@
 
         <nav class="nav-menu">
             <ul>
-                <li><a href="#">Inicio</a></li>
-                <li><a href="#">Servicios</a></li>
-                <li><a href="#">Especialistas</a></li>
+                <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                <li><a asp-controller="Home" asp-action="Services">Servicios</a></li>
+                <li><a asp-controller="Home" asp-action="Specialists">Especialistas</a></li>
                 <li>
                     <a asp-controller="Account" asp-action="Login" class="btn-nav btn-profile">Mi Perfil</a>
                 </li>
