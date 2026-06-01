@@ -1,0 +1,182 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+:root {
+    --bg-premium: #fdf7f4; /* El fondo nude suave de tu imagen */
+    --primary-dark: #23263b; /* El color oscuro de tus botones y títulos principales */
+    --text-muted: #6e6f7d; /* Color para descripciones secundarias */
+    --border-color: #d8c2bc; /* Borde sutil basado en el botón "Registrarse" */
+}
+
+body {
+    background-color: var(--bg-premium);
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+}
+
+/* Contenedor principal centrado */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Tarjeta de autenticación con el minimalismo de la landing */
+.auth-card {
+    background: transparent; /* Mantiene la pureza del fondo */
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+
+.auth-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+}
+
+.auth-subtitle {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #b58376; /* Tono rosa viejo/marrón sutil */
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.auth-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: var(--primary-dark);
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+/* Formulario e Inputs */
+.auth-form {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+    .form-group label {
+        display: block;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 30px; /* Bordes redondeados consistentes */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: var(--primary-dark);
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-dark);
+        background-color: #ffffff;
+    }
+
+/* Botones con el estilo exacto de la imagen */
+.btn-primary-custom {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary-dark);
+    color: #ffffff;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+    .btn-primary-custom:hover {
+        background-color: #171929;
+    }
+
+/* Separador elegante */
+.auth-divider {
+    position: relative;
+    text-align: center;
+    margin: 25px 0;
+}
+
+    .auth-divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: var(--border-color);
+        z-index: 1;
+    }
+
+    .auth-divider span {
+        position: relative;
+        background-color: var(--bg-premium);
+        padding: 0 15px;
+        font-size: 12px;
+        color: var(--text-muted);
+        z-index: 2;
+    }
+
+/* Botón de Google premium */
+.btn-google {
+    width: 100%;
+    padding: 12px;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    color: var(--primary-dark);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-google:hover {
+        background-color: #faf6f4;
+        border-color: var(--primary-dark);
+    }
+
+/* Link de alternancia inferior */
+.auth-switch {
+    margin-top: 30px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+    .auth-switch a {
+        color: var(--primary-dark);
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 1px solid var(--primary-dark);
+        padding-bottom: 2px;
+    }
