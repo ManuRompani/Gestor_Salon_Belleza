@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Gestor_Salon_Belleza.Models.Servicio>
+
+@{
+    ViewData["Title"] = "Glow & Style | Servicios";
+}
+
+<div class="servicios-wrapper">
+
+    <div class="servicios-hero">
+        <span class="subtitle">Lo que ofrecemos</span>
+        <h1>Nuestros servicios</h1>
+        <p>Explorá todo lo que tenemos para vos. Cada servicio está pensado para resaltar tu mejor versión.</p>
+    </div>
+
+    <div class="servicios-grid">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var servicio in Model)
+            {
+                <div class="servicio-card">
+                    <div class="servicio-card-header">
+                        <h2 class="servicio-nombre">@servicio.Nombre</h2>
+                    </div>
+                    <p class="servicio-descripcion">@servicio.Descripcion</p>
+                    <div class="servicio-footer">
+                        <div class="servicio-meta">
+                            <span class="servicio-duracion">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                                @servicio.Duracion_Minutos min
+                            </span>
+                            <span class="servicio-precio">$@servicio.Precio.ToString("N0")</span>
+                        </div>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-reservar">
+                            Reservar
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="servicios-empty">
+                <p>No hay servicios disponibles en este momento.</p>
+            </div>
+        }
+    </div>
+
+</div>
