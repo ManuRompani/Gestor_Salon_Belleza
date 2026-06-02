@@ -86,5 +86,23 @@ namespace Gestor_Salon_Belleza.Controllers
 
         }
 
+
+        /*---  REGISTRO --- */
+
+        public IActionResult Register()
+        {
+            if (User.Identity.IsAuthenticated) 
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return View(); 
+            }
+        }
+
+        public async Task<IActionResult> RegisterAuthenticate(RegisterViewModel model) {
+            return BadRequest();
+        }
     }
 }

@@ -1,0 +1,80 @@
+﻿@model Gestor_Salon_Belleza.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = null; // Quita el menú y footer por defecto de ASP.NET
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrarse - Glow & Style</title>
+
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-card register-card">
+            <div class="auth-logo">
+                <a asp-controller="Home" asp-action="Index">
+                Glow & Style
+                </a>
+            </div>
+   
+        <p class="auth-subtitle">EXPERIENCIA PREMIUM</p>
+        <h2 class="auth-title">Crear Cuenta</h2>
+
+        <form asp-action="RegisterAuthenticate" asp-controller="Account" method="post" class="auth-form">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="ModelOnly" class="auth-error-alert"></div>
+                }
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Nombre">Nombre</label>
+                    <input asp-for="Nombre" class="form-control" placeholder="Tu nombre" />
+                    <span asp-validation-for="Nombre" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Apellido">Apellido</label>
+                    <input asp-for="Apellido" class="form-control" placeholder="Tu apellido" />
+                    <span asp-validation-for="Apellido" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Email">Correo Electrónico</label>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="ejemplo@correo.com" />
+                    <span asp-validation-for="Email" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Telefono">Teléfono</label>
+                    <input asp-for="Telefono" type="tel" class="form-control" placeholder="11 2345-6789" />
+                    <span asp-validation-for="Telefono" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Contraseña</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Mínimo 8 caracteres" />
+                <span asp-validation-for="Password" class="text-validation-error"></span>
+            </div>
+
+            <button type="submit" class="btn-primary-custom">Registrarse</button>
+        </form>
+
+        <p class="auth-switch">
+            ¿Ya tienes una cuenta? <a asp-action="Login" asp-controller="Account">Inicia Sesión</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>
+
+
