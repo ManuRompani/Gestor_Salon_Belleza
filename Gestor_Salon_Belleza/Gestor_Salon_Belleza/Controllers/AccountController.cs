@@ -28,7 +28,10 @@ namespace Gestor_Salon_Belleza.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            return View(); //sino se va al login
+            else
+            {
+                return View(); //sino se va al login
+            }
         }
 
 
@@ -42,9 +45,45 @@ namespace Gestor_Salon_Belleza.Controllers
          * la tarea asincrona. IActionResult puede devolver lo que deseessssss
          * */
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        { 
-            return BadRequest();
+        public async Task<IActionResult> LoginAuthenticate(LoginViewModel model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return View("Login", model);
+            }
+            //Recibe un modelo LoginViewModel con los datos del form del login
+            //Busco en la bd un usuario que coincida con los datos del form
+            // se lo asigno a usuarioBuscado
+            var usuarioBuscado = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
+
+            //Con un if : si existe redirijo al home del tipo de usuario
+            //sino muestro mensaje de error y redirijo nuevamente a login
+            if (usuarioBuscado == null) {
+                ModelState.AddModelError(string.Empty, "Credenciales inválidas");
+                return View("Login", model);
+            }
+
+            int rol_id = usuarioBuscado.Id_Rol; //para usar en switch y derivar correctamente
+
+            switch (rol_id) {
+
+                case 1:
+                    //admin
+                    return RedirectToAction("Index", "Home");
+                case 2:
+                    //cliente
+                    return RedirectToAction("Index", "Home");
+                case 3:
+                    //profesional
+                    return RedirectToAction("Index", "Home");
+                default:
+                    return View("Login", model);
+            }
+
+
+
         }
 
     }
