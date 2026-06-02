@@ -180,3 +180,22 @@ body {
         border-bottom: 1px solid var(--primary-dark);
         padding-bottom: 2px;
     }
+
+.auth-error-alert {
+    background-color: rgba(234, 67, 53, 0.06); /* Un rojo/rosa premium muy sutil */
+    border: 1px solid #ea4335;
+    color: #23263b; /* El tono oscuro principal de tus botones */
+    padding: 12px 16px;
+    border-radius: 20px; /* Redondeado consistente con tus inputs */
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+    /* Para quitar los puntitos molestos de la lista que genera ASP.NET */
+    .auth-error-alert ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
