@@ -66,6 +66,12 @@
                 <span asp-validation-for="Password" class="text-validation-error"></span>
             </div>
 
+                <div class="form-group">
+                    <label asp-for="ConfirmarPassword">Confirmar  Contraseña</label>
+                    <input asp-for="ConfirmarPassword" type="password" class="form-control" placeholder="Mínimo 8 caracteres" />
+                    <span asp-validation-for="ConfirmarPassword" class="text-validation-error"></span>
+                </div>
+
             <button type="submit" class="btn-primary-custom">Registrarse</button>
         </form>
 

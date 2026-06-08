@@ -27,9 +27,9 @@ namespace Gestor_Salon_Belleza.Models
         [Required(ErrorMessage = "Campo Requerido")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Mínimo 8 caracteres")]
         public string Password { get; set; }
-        
 
-        public bool Eliminado { get; set; }
+
+        public bool Eliminado { get; set; } = false;
 
         [Required]
         [ForeignKey(nameof(Rol))]

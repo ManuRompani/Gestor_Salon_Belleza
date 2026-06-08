@@ -24,6 +24,9 @@ namespace Gestor_Salon_Belleza.ViewModels
         [Required(ErrorMessage = "Campo Requerido")]
         public string Password { get; set; }
 
+        [Required(ErrorMessage = "Campo Requerido")]
+        [Compare("Password", ErrorMessage = "Las contraseñas no coinciden")]
+        public string ConfirmarPassword { get; set; }
 
     }
 }
