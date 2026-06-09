@@ -37,5 +37,9 @@ namespace Gestor_Salon_Belleza.Models
 
         
         public Rol Rol { get; set; }
+
+        // Relacion con el alta de google
+        // La hago de muchos ya que podria tener con otro medio, ej, LinkedIn...(ponele)
+        public ICollection<UsuarioLoginExterno> LoginsExternos { get; set; } = new List<UsuarioLoginExterno>();
     }
 }

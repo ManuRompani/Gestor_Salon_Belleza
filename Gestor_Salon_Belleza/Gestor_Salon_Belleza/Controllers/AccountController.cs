@@ -190,5 +190,5 @@ namespace Gestor_Salon_Belleza.Controllers
         }
 
 
-}  
+    }  
 }

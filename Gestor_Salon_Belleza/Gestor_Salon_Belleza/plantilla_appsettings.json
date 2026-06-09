@@ -1,4 +1,8 @@
 {
+  "GoogleKeys": {
+    "ClientId": "",
+    "ClientSecret": ""
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
@@ -7,6 +11,6 @@
   },
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=GestorSalonBelleza;Trusted_Connection=True;MultipleActiveResultSets=true"
+    "DefaultConnection": ""
   }
 }
