@@ -1,4 +1,5 @@
-﻿@model Gestor_Salon_Belleza.ViewModels.LoginViewModel
+﻿@using Gestor_Salon_Belleza.Utils.Enumerables
+@model Gestor_Salon_Belleza.ViewModels.LoginViewModel
 @{
     ViewData["Title"] = "Login";
     Layout = null; // Quita el menú y footer por defecto de ASP.NET
@@ -21,6 +22,16 @@
             <div id="login-section">
                 <p class="auth-subtitle">EXPERIENCIA PREMIUM</p>
                 <h2 class="auth-title">Bienvenido de nuevo</h2>
+
+                @if (TempData["Exito"] != null)
+                {
+                    <div class="auth-success-alert">@TempData["Exito"]</div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="auth-error-alert">@TempData["Error"]</div>
+                }
 
                 <form asp-action="LoginAuthenticate" asp-controller="Account" method="post" class="auth-form">
                     @if (!ViewData.ModelState.IsValid)
@@ -49,7 +60,7 @@
 
 
           
-                <form asp-action="ExternalLogin" asp-controller="Account" asp-route-provider="Google" method="post">
+                <form asp-action="ExternalLogin" asp-controller="Account" asp-route-provider="Google" asp-route-tipoUsuario=@EnumRoles.Cliente method="post">
                     <button type="submit" class="btn-google">
                         <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

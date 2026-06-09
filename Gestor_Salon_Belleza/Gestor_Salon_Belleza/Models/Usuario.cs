@@ -20,13 +20,11 @@ namespace Gestor_Salon_Belleza.Models
         [EmailAddress(ErrorMessage = "Email inválido")]
         public string Email { get; set; }
                 
-        [Required(ErrorMessage = "Campo Requerido")]
         [Phone(ErrorMessage = "Teléfono inválido")]
-        public string Telefono { get; set; }
+        public string? Telefono { get; set; }
 
-        [Required(ErrorMessage = "Campo Requerido")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Mínimo 8 caracteres")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
 
         public bool Eliminado { get; set; } = false;
