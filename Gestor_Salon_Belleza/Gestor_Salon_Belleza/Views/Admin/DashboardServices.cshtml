@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Gestión de Servicios";
+}
+@section DashboardServices {
+    <link rel="stylesheet" href="~/css/dashboard-services.css" />
+}
+
+<main>
+
+<div class="d-flex mt-5">    
+
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-dark"><i class="bi bi-gear-fill text-primary"></i> Panel de Gestión de Servicios</h1>
+        <p class="lead text-muted">Seleccioná la acción que deseás realizar sobre el catálogo del salón.</p>
+    </div>
+
+    
+
+        
+
+            <div class="card h-100 shadow-sm border-0 text-center p-4 bg-light">
+                <div class="card-body d-flex flex-column align-items-center justify-content-between">                   
+                    <a asp-controller="Admin" asp-action="RegisterServices" class="btn btn-success w-100 py-2 mt-4 fw-bold">
+                        <i class="bi bi-plus-lg"></i> Registrar Servicios
+                    </a>
+                </div>
+            </div>
+
+     
+
+        
+            <div class="card h-100 shadow-sm border-0 text-center p-4 bg-light">
+                <div class="card-body d-flex flex-column align-items-center justify-content-between">     
+                    <a asp-controller="Admin" asp-action="EditServices" class="btn btn-warning text-dark w-100 py-2 mt-4 fw-bold">
+                        <i class="bi bi-pencil"></i> Editar Servicios
+                    </a>
+                </div>
+            </div>
+       
+
+    </div>
+
+    <div class="mb-4">
+        <a asp-controller="Admin" asp-action="DashboardAdmin" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Volver al Panel de Administrador
+        </a>
+    </div>
+</main>

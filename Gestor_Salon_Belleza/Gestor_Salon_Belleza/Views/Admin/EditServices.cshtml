@@ -1,0 +1,78 @@
+﻿@model Gestor_Salon_Belleza.ViewModels.ServicesViewModel
+
+@{
+    ViewData["Title"] = "Glow & Style | ADMIN: Editar Servicio";
+}
+
+<div class="container mt-4">
+    <h2>Editar Servicio</h2>
+    <h4>Modifique los datos del servicio seleccionado</h4>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="form-group mb-3">
+                    <label asp-for="Nombre" class="control-label fw-bold">Nombre del Servicio</label>
+                    <input asp-for="Nombre" class="form-control" placeholder="Ej. Corte de cabello" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Descripcion" class="control-label fw-bold">Descripción (Opcional)</label>
+                    <textarea asp-for="Descripcion" class="form-control" rows="3" placeholder="Detalle del servicio..."></textarea>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Duracion" class="control-label fw-bold">Duración (en minutos)</label>
+                    <input asp-for="Duracion" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="Duracion" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Precio" class="control-label fw-bold">Precio ($)</label>
+                    <input asp-for="Precio" class="form-control" type="number" step="0.01" />
+                    <span asp-validation-for="Precio" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        Volver al Listado
+                    </a>
+                </div>
+            </form>
+
+            <hr class="my-4" />
+            <div class="card border-danger">
+                <div class="card-body">
+                    <h5 class="card-title text-danger">Zona de Peligro</h5>
+                    <p class="card-text text-muted small">Al dar de baja este servicio, dejará de estar disponible para nuevos turnos, pero se conservará en el historial del salón.</p>
+
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('¿Está seguro de que desea dar de baja este servicio?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Dar de Baja Servicio
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

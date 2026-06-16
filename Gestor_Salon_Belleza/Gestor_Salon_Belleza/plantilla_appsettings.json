@@ -1,4 +1,8 @@
 {
+  "GoogleKeys": {
+    "ClientId": "",
+    "ClientSecret": ""
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",

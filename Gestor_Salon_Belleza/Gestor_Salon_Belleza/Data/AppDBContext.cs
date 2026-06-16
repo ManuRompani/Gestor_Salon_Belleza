@@ -28,6 +28,7 @@ namespace Gestor_Salon_Belleza.Data
         public DbSet<Turno> Turnos { get; set; }
         public DbSet<Turno_Servicio> Turno_Servicios { get; set; }
         public DbSet<Profesional_Servicio> Profesional_Servicios { get; set; }
+        public DbSet<UsuarioLoginExterno> Usuario_LoginsExternos { get; set; }
 
 
 
@@ -57,6 +58,12 @@ namespace Gestor_Salon_Belleza.Data
                         .WithMany(c => c.Turnos) 
                         .HasForeignKey(t => t.Id_Profesional) 
                         .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<UsuarioLoginExterno>()
+                .HasOne(ule => ule.Usuario)
+                .WithMany(u => u.LoginsExternos)
+                .HasForeignKey(ule => ule.Id_Usuario)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         

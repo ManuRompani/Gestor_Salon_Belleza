@@ -20,16 +20,14 @@ namespace Gestor_Salon_Belleza.Models
         [EmailAddress(ErrorMessage = "Email inválido")]
         public string Email { get; set; }
                 
-        [Required(ErrorMessage = "Campo Requerido")]
         [Phone(ErrorMessage = "Teléfono inválido")]
-        public string Telefono { get; set; }
+        public string? Telefono { get; set; }
 
-        [Required(ErrorMessage = "Campo Requerido")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Mínimo 8 caracteres")]
-        public string Password { get; set; }
-        
+        public string? Password { get; set; }
 
-        public bool Eliminado { get; set; }
+
+        public bool Eliminado { get; set; } = false;
 
         [Required]
         [ForeignKey(nameof(Rol))]
@@ -37,5 +35,9 @@ namespace Gestor_Salon_Belleza.Models
 
         
         public Rol Rol { get; set; }
+
+        // Relacion con el alta de google
+        // La hago de muchos ya que podria tener con otro medio, ej, LinkedIn...(ponele)
+        public ICollection<UsuarioLoginExterno> LoginsExternos { get; set; } = new List<UsuarioLoginExterno>();
     }
 }

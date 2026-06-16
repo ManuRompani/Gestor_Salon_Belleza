@@ -1,0 +1,73 @@
+@model Gestor_Salon_Belleza.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+
+<main class="profile-page">
+    <section class="profile-shell">
+        <div class="profile-card">
+            <div class="profile-header">
+                <p class="profile-eyebrow">AREA PERSONAL</p>
+                <h1>Mi Perfil</h1>
+                <p class="profile-copy">Desde acá podés consultar tus datos, actualizarlos y cerrar tu sesión cuando lo necesites.</p>
+            </div>
+
+            @if (TempData["Exito"] != null)
+            {
+                <div class="profile-alert profile-alert-success">@TempData["Exito"]</div>
+            }
+
+            <form asp-action="UpdateProfile" asp-controller="Account" method="post" class="profile-form">
+                @Html.AntiForgeryToken()
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="ModelOnly" class="profile-alert profile-alert-error"></div>
+                }
+
+                <div class="profile-grid">
+                    <div class="profile-field">
+                        <label asp-for="Nombre">Nombre</label>
+                        <input asp-for="Nombre" class="profile-input" />
+                        <span asp-validation-for="Nombre" class="profile-validation"></span>
+                    </div>
+
+                    <div class="profile-field">
+                        <label asp-for="Apellido">Apellido</label>
+                        <input asp-for="Apellido" class="profile-input" />
+                        <span asp-validation-for="Apellido" class="profile-validation"></span>
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label asp-for="Email">Correo Electrónico</label>
+                    <input asp-for="Email" class="profile-input" readonly />
+                    <span class="profile-help">El correo pertenece a tu cuenta y no se modifica desde esta pantalla.</span>
+                </div>
+
+                <div class="profile-field">
+                    <label asp-for="Telefono">Teléfono</label>
+                    <input asp-for="Telefono" class="profile-input" />
+                    <span asp-validation-for="Telefono" class="profile-validation"></span>
+                </div>
+
+                <div class="profile-actions">
+                    <button type="submit" class="btn btn-primary profile-save">Guardar Cambios</button>
+                </div>
+            </form>
+
+            <div class="profile-divider"></div>
+
+            <form asp-action="Logout" asp-controller="Account" method="post" class="profile-logout">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-secondary profile-logout-btn">Cerrar Sesión</button>
+            </form>
+        </div>
+    </section>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

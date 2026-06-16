@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Gestor_Salon_Belleza.Data;
 using Gestor_Salon_Belleza.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,8 @@ namespace Gestor_Salon_Belleza.Controllers
         {
             return View();
         }
+
+       
 
         public async Task<IActionResult> Services()
         {
