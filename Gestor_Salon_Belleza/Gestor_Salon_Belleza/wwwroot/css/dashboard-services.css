@@ -1,0 +1,113 @@
+﻿.container {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+}
+
+
+/* Título e indicaciones principales */
+h1.display-5 {
+    color: #1d1d1f !important;
+    font-size: 2.25rem;
+    letter-spacing: -0.02em;
+}
+
+.lead.text-muted {
+    color: #6e6e73 !important;
+    font-size: 1.05rem;
+}
+
+/* Botón de regreso */
+.btn-outline-secondary.btn-sm {
+    color: #6e6e73;
+    border-color: #d2d2d7;
+    background-color: transparent;
+    border-radius: 20px;
+    padding: 0.4rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn-outline-secondary.btn-sm:hover {
+        color: #1d1d1f;
+        border-color: #86868b;
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+/* Tarjetas de gestión */
+.card {
+    background-color: #ffffff !important;
+    border-radius: 16px !important;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Efecto hover sutil para las tarjetas */
+.col-md-5:hover .card {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Títulos y textos dentro de las tarjetas */
+.card-title {
+    color: #1d1d1f !important;
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-text.text-secondary {
+    color: #6e6e73 !important;
+    line-height: 1.5;
+}
+
+/* Contenedor circular de los íconos */
+.rounded-circle {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+}
+
+/* Variación círculo Registrar (Verde) */
+.bg-success.bg-opacity-10 {
+    background-color: rgba(40, 167, 69, 0.08) !important;
+    color: #28a745 !important;
+}
+
+/* Variación círculo Editar (Dorado/Ocre) */
+.bg-warning.bg-opacity-10 {
+    background-color: rgba(211, 158, 0, 0.08) !important;
+    color: #d39e00 !important;
+}
+
+/* Botones de acción principales (Estilo redondeado de Glow & Style) */
+.card-body .btn {
+    border-radius: 25px !important; /* Mismo radio que el botón 'Mi Perfil' */
+    padding: 0.65rem 1.5rem !important;
+    font-size: 0.95rem;
+    border: none;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Botón Registrar Servicios */
+.btn-success {
+    background-color: #28a745 !important;
+    color: #ffffff !important;
+}
+
+    .btn-success:hover {
+        background-color: #218838 !important;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+    }
+
+/* Botón Editar Servicios */
+.btn-warning.text-dark {
+    background-color: #2f3254 !important; /* Mismo tono oscuro corporativo del dashboard general */
+    color: #ffffff !important; /* Texto en blanco para mejorar contraste sobre el fondo oscuro */
+}
+
+    .btn-warning.text-dark:hover {
+        background-color: #1f213a !important;
+        box-shadow: 0 4px 12px rgba(47, 50, 84, 0.2);
+    }

@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dashboard-services.css" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    @RenderSection("DashboardServices", required: false)
+
 </head>
 <body>
     <header class="header">
@@ -26,20 +30,19 @@
                 <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
                 <li><a asp-controller="Home" asp-action="Services">Servicios</a></li>
                 <li><a asp-controller="Home" asp-action="Specialists">Especialistas</a></li>
-                <li>
-                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
-                    {
-                        <a asp-controller="Account" asp-action="Profile" class="btn-nav btn-profile">Mi Perfil</a>
-                    }
-                    else if (User.Identity != null && User.Identity.IsAuthenticated)
-                    {
-                        <a asp-controller="Account" asp-action="RedirectByRol" class="btn-nav btn-profile">Mi Perfil</a>
-                    }
-                    else
-                    {
-                        <a asp-controller="Account" asp-action="Login" class="btn-nav btn-profile">Mi Perfil</a>
-                    }
+                <li>                    
+                        <a asp-controller="Account" asp-action="Login" class="btn-nav btn-profile">Mi Perfil</a>                   
                 </li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn-nav btn-logout">Cerrar sesi�n</button>
+                    </form>
+                </li>
+                
+                }
+                
             </ul>
         </nav>
     </header>
