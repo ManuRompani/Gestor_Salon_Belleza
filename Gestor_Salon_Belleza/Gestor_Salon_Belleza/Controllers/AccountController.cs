@@ -16,54 +16,57 @@ namespace Gestor_Salon_Belleza.Controllers
     public class AccountController : Controller
     {
 
-        /* Este controlador se encarga
-         * de manejar acciones relacionadas con la cuenta
-         * de los usuarios, login, registro, logout
-         */
+        private readonly AppDBContext _context; 
 
-
-        private readonly AppDBContext _context; // Declaracion del contexto de BD
-
-        // Constructor que recibe el contexto de BD por inyeccion de dependencias
         public AccountController(AppDBContext context)
         {
-            _context = context; // Asignacion del contexto a la variable local
+            _context = context;
         }
 
 
 
+    /*===== LOGIN =====*/
 
-    // === LOGIN ===
-
-        [HttpGet] //GET: Porque muestra formulario de login
+        [HttpGet] 
         public IActionResult Login() {
-            if (User.Identity != null && User.Identity.IsAuthenticated) //si identity no es null y el usuario esta autenticado
+            if (User.Identity != null && User.Identity.IsAuthenticated) 
             {
+
                 return RedirectToAction("Index", "Home");
+                
+                
             }
             else
             {
-                return View(); //sino se va al login
+                return View(); 
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout() {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home");
+        private async Task SignInLocalUserAsync(Usuario usuario, bool recordarme = false)
+        {
+            // Centralizamos las claims para reutilizar exactamente la misma sesión en login manual y Google.
+            // Claims = datos mínimos del usuario que viajan dentro de la cookie autenticada.
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, usuario.Nombre),
+                new Claim(ClaimTypes.Email, usuario.Email),
+                new Claim(ClaimTypes.Role, usuario.Rol!.Rol_Name)
+            };
+
+            // ClaimsIdentity define el tipo de autenticación y agrupa esas claims.
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            // ClaimsPrincipal es el objeto que ASP.NET guardará en la cookie y luego expondrá como User.
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = recordarme
+                });
         }
-
-
-        /* async ---> ¿Por qué se usa? En lugar de congelar un hilo del servidor esperando 
-         * a que la base de datos responda,el hilo se libera para atender a otros usuarios. 
-         * Cuando la base de datos termina, el método retoma su ejecución. 
-         * Esto hace que la aplicación soporte muchísimos más usuarios en simultáneo.*/
-
-        /* Task<IActionResult> ---> task va de la mano de async,
-         * promesa de que el metodo devolvera algo en el futuro al terminar
-         * la tarea asincrona. IActionResult puede devolver lo que deseessssss
-         * */
+       
         [HttpPost]
         public async Task<IActionResult> LoginAuthenticate(LoginViewModel model)
         {
@@ -109,6 +112,7 @@ namespace Gestor_Salon_Belleza.Controllers
             return RedirectToAction(nameof(RedirectByRol));
         }
 
+        // EXTERNAL LOGIN
         [HttpPost]
         public IActionResult ExternalLogin(string provider, EnumRoles tipoUsuario)
         {
@@ -323,6 +327,19 @@ namespace Gestor_Salon_Belleza.Controllers
             return RedirectToAction(nameof(RedirectByRol));
         }
 
+
+    /*===== LOGOUT =====*/
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
+
+        /*===== PROFILE =====*/
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Profile()
@@ -414,7 +431,7 @@ namespace Gestor_Salon_Belleza.Controllers
         }
 
 
-        // === REGISTRO === 
+    /*===== REGISTER =====*/
 
         public IActionResult Register()
         {
@@ -486,7 +503,8 @@ namespace Gestor_Salon_Belleza.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        // === REDIRECT ===
+
+    /*===== REDIRECT =====*/
 
         public IActionResult RedirectByRol()
         {
@@ -504,10 +522,11 @@ namespace Gestor_Salon_Belleza.Controllers
 
                 case "Administrador":
                     
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("DashboardAdmin", "Admin");
                 case "Cliente":
                     
                     return RedirectToAction("Index", "Home");
+
                 case "Profesional":
                     
                     return RedirectToAction("Index", "Home");
@@ -517,29 +536,6 @@ namespace Gestor_Salon_Belleza.Controllers
 
         }
 
-        private async Task SignInLocalUserAsync(Usuario usuario, bool recordarme = false)
-        {
-            // Centralizamos las claims para reutilizar exactamente la misma sesión en login manual y Google.
-            // Claims = datos mínimos del usuario que viajan dentro de la cookie autenticada.
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, usuario.Nombre),
-                new Claim(ClaimTypes.Email, usuario.Email),
-                new Claim(ClaimTypes.Role, usuario.Rol!.Rol_Name)
-            };
-
-            // ClaimsIdentity define el tipo de autenticación y agrupa esas claims.
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            // ClaimsPrincipal es el objeto que ASP.NET guardará en la cookie y luego expondrá como User.
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal,
-                new AuthenticationProperties
-                {
-                    IsPersistent = recordarme
-                });
-        }
+       
     }  
 }
