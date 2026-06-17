@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Gestor_Salon_Belleza.Data;
 using Gestor_Salon_Belleza.Models;
+using Gestor_Salon_Belleza.Utils.Enumerables;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,10 @@ namespace Gestor_Salon_Belleza.Controllers
 
         public IActionResult Index()
         {
+            if (User.IsInRole(EnumRoles.Administrador.ToString()))
+            {
+                return RedirectToAction("DashboardAdmin", "Admin");
+            }
             return View();
         }
 

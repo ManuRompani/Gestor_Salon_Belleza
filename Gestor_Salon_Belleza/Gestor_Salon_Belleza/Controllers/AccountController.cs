@@ -31,10 +31,7 @@ namespace Gestor_Salon_Belleza.Controllers
         public IActionResult Login() {
             if (User.Identity != null && User.Identity.IsAuthenticated) 
             {
-
                 return RedirectToAction("Index", "Home");
-                
-                
             }
             else
             {
@@ -496,7 +493,7 @@ namespace Gestor_Salon_Belleza.Controllers
                 Email = model.Email,
                 Telefono = model.Telefono,
                 Password = passwordHasheada,
-                Id_Rol = 2
+                Id_Rol = (int)EnumRoles.Cliente
             };
 
             _context.Add(nuevoUsuario);

@@ -2,6 +2,7 @@
 using Gestor_Salon_Belleza.Models;
 using Gestor_Salon_Belleza.Utils.Enumerables;
 using Gestor_Salon_Belleza.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Gestor_Salon_Belleza.Controllers
 {
+    [Authorize(Roles = "Administrador,Profesional")]
     public class ProfesionalController : Controller
     {
         private readonly AppDBContext _context;
@@ -24,7 +26,9 @@ namespace Gestor_Salon_Belleza.Controllers
         // ADMIN - LISTADO
         // =========================
 
+
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> AdminIndex()
         {
             var profesionales = await _context.Profesionales
