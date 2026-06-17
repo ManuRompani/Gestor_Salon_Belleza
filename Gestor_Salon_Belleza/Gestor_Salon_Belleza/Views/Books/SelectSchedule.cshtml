@@ -1,0 +1,59 @@
+@using Gestor_Salon_Belleza.ViewModels
+@model BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Select Schedule - Glow & Style";
+}
+@section DashboardServices {
+    <link rel="stylesheet" href="~/css/select-schedule.css" asp-append-version="true" />
+}
+
+<div class="turnos-wrapper">
+    <div class="turnos-hero">
+        <span class="subtitle">Step 2 of 3</span>
+        <h1>Choose a date & time</h1>
+        <p>Professional: <strong>@Model.ProfessionalName</strong> — Service: <strong>@Model.ServiceName</strong> (@Model.DurationMinutes min)</p>
+    </div>
+
+    <div class="schedule-selector">
+        <form method="get" asp-action="SelectSchedule" class="date-picker-form">
+            <input type="hidden" name="serviceId" value="@Model.ServiceId" />
+            <input type="hidden" name="professionalId" value="@Model.ProfessionalId" />
+            <label for="date">Select a date</label>
+            <input type="date" id="date" name="date"
+                   value="@Model.PreferredDate?.ToString("yyyy-MM-dd")"
+                   min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                   onchange="this.form.submit()" />
+        </form>
+
+        @if (Model.AvailableSlots != null && Model.AvailableSlots.Any())
+        {
+            <div class="slots-grid">
+                @foreach (var slot in Model.AvailableSlots)
+                {
+                    @if (slot.Available)
+                    {
+                        <a asp-action="Confirm"
+                           asp-route-serviceId="@Model.ServiceId"
+                           asp-route-professionalId="@Model.ProfessionalId"
+                           asp-route-dateTime="@slot.DateTime.ToString("yyyy-MM-ddTHH:mm:ss")"
+                           class="slot-card slot-available">
+                            @slot.Display
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="slot-card slot-occupied">
+                            @slot.Display
+                        </div>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div class="turnos-empty">
+                <p>No available slots for this date.</p>
+            </div>
+        }
+    </div>
+</div>

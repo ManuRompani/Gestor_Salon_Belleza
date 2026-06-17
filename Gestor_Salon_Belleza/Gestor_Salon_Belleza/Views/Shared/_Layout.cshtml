@@ -30,8 +30,25 @@
                 <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
                 <li><a asp-controller="Home" asp-action="Services">Servicios</a></li>
                 <li><a asp-controller="Home" asp-action="Specialists">Especialistas</a></li>
-                <li>                    
-                        <a asp-controller="Account" asp-action="Login" class="btn-nav btn-profile">Mi Perfil</a>                   
+                <li>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
+                    {
+                        <a asp-controller="Books" asp-action="MyAppointments" class="btn-nav">Mis Turnos</a>
+                    }
+                </li>
+                <li>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
+                    {
+                        <a asp-controller="Account" asp-action="Profile" class="btn-nav btn-profile">Mi Perfil</a>
+                    }
+                    else if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="Account" asp-action="RedirectByRol" class="btn-nav btn-profile">Mi Perfil</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn-nav btn-profile">Mi Perfil</a>
+                    }
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -39,7 +56,7 @@
                     <form asp-controller="Account" asp-action="Logout" method="post">
                         <button type="submit" class="btn-nav btn-logout">Cerrar sesi�n</button>
                     </form>
-                </li>
+                    </li>
                 
                 }
                 

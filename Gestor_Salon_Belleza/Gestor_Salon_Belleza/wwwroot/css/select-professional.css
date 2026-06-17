@@ -1,0 +1,45 @@
+.turnos-wrapper {
+    flex: 1;
+    padding: 56px 8% 70px;
+}
+
+.turnos-hero {
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto 52px;
+}
+
+.turnos-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #353654;
+    line-height: 1.15;
+    letter-spacing: -0.4px;
+    margin: 0 auto 18px;
+}
+
+.turnos-hero p {
+    font-size: 0.94rem;
+    color: #6f6c77;
+    line-height: 1.9;
+    margin: 0 auto;
+}
+
+.turnos-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    color: #a29791;
+    font-size: 0.94rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .turnos-wrapper { padding: 40px 5% 60px; }
+    .turnos-hero h1 { font-size: 2.2rem; }
+    .especialistas-grid { grid-template-columns: 1fr; }
+}
