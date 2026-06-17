@@ -29,7 +29,9 @@ namespace Gestor_Salon_Belleza.Models
         public DateTime? FechaCancelacion { get; set; }
 
         public Cliente Cliente { get; set; }
-        public Profesional Profesional { get; set; }    
+        public Profesional Profesional { get; set; }
+
+        public ICollection<Turno_Servicio> TurnoServicios { get; set; }
 
     }
 }
