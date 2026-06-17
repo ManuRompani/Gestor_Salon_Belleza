@@ -1,0 +1,223 @@
+﻿.professional-page {
+    min-height: calc(100vh - 160px);
+    background-color: #fbf4f0;
+    padding: 70px 20px 90px;
+    box-sizing: border-box;
+    color: #23263b;
+    font-family: "Montserrat", Arial, sans-serif;
+}
+
+.professional-card {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.professional-subtitle {
+    font-size: 12px;
+    letter-spacing: 6px;
+    color: #b58376;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+}
+
+.professional-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 42px;
+    line-height: 1.1;
+    color: #23263b;
+    margin: 0 0 36px;
+}
+
+.professional-form {
+    width: 100%;
+    text-align: left;
+}
+
+.professional-section-title {
+    font-size: 13px;
+    color: #23263b;
+    margin: 28px 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(181, 131, 118, 0.28);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.professional-field {
+    margin-bottom: 20px;
+}
+
+    .professional-field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #23263b;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 8px;
+    }
+
+.professional-input {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid rgba(181, 131, 118, 0.55);
+    border-radius: 28px;
+    background-color: transparent;
+    color: #23263b;
+    padding: 0 18px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: "Montserrat", Arial, sans-serif;
+}
+
+    .professional-input:focus {
+        border-color: #b58376;
+    }
+
+    .professional-input::placeholder {
+        color: rgba(35, 38, 59, 0.45);
+    }
+
+    .professional-input:disabled {
+        background-color: rgba(255, 255, 255, 0.35);
+        color: rgba(35, 38, 59, 0.75);
+        cursor: not-allowed;
+    }
+
+.professional-textarea {
+    min-height: 120px;
+    resize: vertical;
+    padding-top: 16px;
+    border-radius: 24px;
+}
+
+.professional-validation {
+    display: block;
+    font-size: 11px;
+    color: #b58376;
+    margin-top: 6px;
+    margin-left: 14px;
+    font-weight: 500;
+    text-align: left;
+}
+
+.professional-alert {
+    background-color: rgba(181, 131, 118, 0.08);
+    border: 1px solid #b58376;
+    color: #23263b;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 22px;
+    text-align: left;
+}
+
+    .professional-alert ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+.professional-services-box {
+    border: 1px solid rgba(181, 131, 118, 0.55);
+    border-radius: 24px;
+    padding: 16px 18px;
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.professional-service-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    color: #23263b;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+    .professional-service-option:last-child {
+        margin-bottom: 0;
+    }
+
+    .professional-service-option input {
+        accent-color: #23263b;
+    }
+
+.professional-empty {
+    margin: 0;
+    font-size: 13px;
+    color: #b58376;
+    text-align: center;
+}
+
+.professional-primary-button,
+.professional-danger-button {
+    width: 100%;
+    border: none;
+    border-radius: 28px;
+    padding: 15px 18px;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 26px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    box-sizing: border-box;
+    font-family: "Montserrat", Arial, sans-serif;
+}
+
+.professional-primary-button {
+    background-color: #23263b;
+}
+
+.professional-danger-button {
+    background-color: #b58376;
+}
+
+    .professional-primary-button:hover,
+    .professional-danger-button:hover {
+        opacity: 0.92;
+    }
+
+.professional-button-link {
+    line-height: normal;
+}
+
+.professional-secondary-link {
+    display: block;
+    text-align: center;
+    margin-top: 18px;
+    color: #23263b;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .professional-secondary-link:hover {
+        text-decoration: underline;
+    }
+
+@media (max-width: 600px) {
+    .professional-page {
+        padding: 45px 18px 70px;
+    }
+
+    .professional-card {
+        max-width: 100%;
+    }
+
+    .professional-title {
+        font-size: 34px;
+    }
+}

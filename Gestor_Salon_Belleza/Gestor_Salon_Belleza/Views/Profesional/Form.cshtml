@@ -1,0 +1,299 @@
+@model Gestor_Salon_Belleza.ViewModels.ProfesionalViewModel
+
+@{
+    string modo = ViewBag.Modo as string ?? "Create";
+
+    bool esCreate = modo == "Create";
+    bool esDetails = modo == "Details";
+    bool esEdit = modo == "Edit";
+    bool esDelete = modo == "Delete";
+
+    bool esMiPerfil = modo == "MiPerfil";
+    bool esEditMiPerfil = modo == "EditMiPerfil";
+    bool esBajaMiPerfil = modo == "BajaMiPerfil";
+
+    bool esLectura = esDetails || esMiPerfil;
+    bool esBaja = esDelete || esBajaMiPerfil;
+    bool esEdicion = esEdit || esEditMiPerfil;
+
+    bool soloLectura = esLectura || esBaja;
+
+    string titulo = esCreate ? "Crear Profesional"
+        : esEdit ? "Editar Profesional"
+        : esDelete ? "Dar de baja Profesional"
+        : esMiPerfil ? "Mi Perfil Profesional"
+        : esEditMiPerfil ? "Editar Mi Perfil"
+        : esBajaMiPerfil ? "Dar de baja Mi Perfil"
+        : "Detalle Profesional";
+
+    string subtitulo = esCreate ? "ALTA DE PROFESIONAL"
+        : esEdit || esEditMiPerfil ? "MODIFICACION DE DATOS"
+        : esDelete || esBajaMiPerfil ? "BAJA LOGICA"
+        : esMiPerfil ? "PERFIL PROFESIONAL"
+        : "CONSULTA DE DATOS";
+
+    string accionFormulario = esCreate ? "Create"
+        : esEdit ? "Edit"
+        : esDelete ? "Delete"
+        : esEditMiPerfil ? "EditarMiPerfil"
+        : esBajaMiPerfil ? "BajaMiPerfil"
+        : "Details";
+
+    ViewData["Title"] = titulo;
+}
+
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/register.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/professional.css" asp-append-version="true" />
+
+<section class="auth-container professional-shell">
+    <div class="auth-card register-card professional-form-card">
+        <p class="auth-subtitle">@subtitulo</p>
+        <h2 class="auth-title">@titulo</h2>
+
+        @if (esDelete)
+        {
+            <div class="auth-error-alert professional-soft-alert">
+                Esta accion dara de baja al profesional de forma logica. No se eliminara fisicamente de la base de datos.
+            </div>
+        }
+
+        @if (esBajaMiPerfil)
+        {
+            <div class="auth-error-alert professional-soft-alert">
+                Esta accion dara de baja tu perfil profesional. Tu usuario quedara marcado como eliminado.
+            </div>
+        }
+
+        <form asp-action="@accionFormulario"
+              asp-controller="Profesional"
+              method="post"
+              class="auth-form professional-form-layout"
+              id="profesionalForm">
+
+            @Html.AntiForgeryToken()
+
+            @if (!esCreate && Model.Id_Usuario != null)
+            {
+                <input type="hidden" asp-for="Id_Usuario" />
+            }
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="ModelOnly" class="auth-error-alert"></div>
+            }
+
+            <h3 class="professional-section-heading">Datos del usuario</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Nombre">Nombre</label>
+                    <input asp-for="Nombre"
+                           class="form-control"
+                           placeholder="Nombre del profesional"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Nombre" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Apellido">Apellido</label>
+                    <input asp-for="Apellido"
+                           class="form-control"
+                           placeholder="Apellido del profesional"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Apellido" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Email">Correo Electrónico</label>
+                    <input asp-for="Email"
+                           type="email"
+                           class="form-control"
+                           placeholder="ejemplo@correo.com"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Email" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Telefono">Teléfono</label>
+                    <input asp-for="Telefono"
+                           type="tel"
+                           class="form-control"
+                           placeholder="11 2345-6789"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Telefono" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            @if (esCreate || esEdicion)
+            {
+                <div class="form-group">
+                    <label asp-for="Password">@(esCreate ? "Contraseña" : "Nueva Contraseña")</label>
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control"
+                           placeholder="@(esCreate ? "Mínimo 8 caracteres" : "Dejar vacío para no modificar")"
+                           required="@esCreate"
+                           minlength="8" />
+                    <span asp-validation-for="Password" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmarPassword">@(esCreate ? "Confirmar Contraseña" : "Confirmar Nueva Contraseña")</label>
+                    <input asp-for="ConfirmarPassword"
+                           type="password"
+                           class="form-control"
+                           placeholder="@(esCreate ? "Repetir contraseña" : "Repetir nueva contraseña")"
+                           required="@esCreate" />
+                    <span asp-validation-for="ConfirmarPassword" class="text-validation-error"></span>
+                </div>
+            }
+
+            <h3 class="professional-section-heading">Datos profesionales</h3>
+
+            <div class="form-group">
+                <label asp-for="UrlImagen">Imagen</label>
+                <input asp-for="UrlImagen"
+                       class="form-control"
+                       placeholder="https://..."
+                       disabled="@soloLectura" />
+                <span asp-validation-for="UrlImagen" class="text-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Descripcion">Descripción</label>
+                <textarea asp-for="Descripcion"
+                          class="form-control professional-textarea-input"
+                          placeholder="Descripción profesional, experiencia o especialidad"
+                          disabled="@soloLectura"></textarea>
+                <span asp-validation-for="Descripcion" class="text-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Servicios que ofrece</label>
+
+                <div class="professional-services-panel">
+                    @if (Model.ServiciosDisponibles != null && Model.ServiciosDisponibles.Any())
+                    {
+                        foreach (var servicio in Model.ServiciosDisponibles)
+                        {
+                            int servicioId = int.Parse(servicio.Value);
+                            bool seleccionado = Model.IdsServiciosSeleccionados.Contains(servicioId);
+
+                            <label class="professional-service-chip">
+                                <input type="checkbox"
+                                       name="IdsServiciosSeleccionados"
+                                       value="@servicio.Value"
+                                       checked="@seleccionado"
+                                       disabled="@soloLectura" />
+                                <span>@servicio.Text</span>
+                            </label>
+                        }
+                    }
+                    else
+                    {
+                        <p class="professional-empty-copy">No hay servicios cargados.</p>
+                    }
+                </div>
+
+                <span asp-validation-for="IdsServiciosSeleccionados" class="text-validation-error"></span>
+                <span id="serviciosFrontError" class="text-validation-error"></span>
+            </div>
+
+            @if (esCreate)
+            {
+                <button type="submit" class="btn-primary-custom">Crear profesional</button>
+                <p class="auth-switch"><a asp-controller="Profesional" asp-action="Index">Volver</a></p>
+            }
+
+            @if (esDetails)
+            {
+                <a asp-controller="Profesional"
+                   asp-action="Edit"
+                   asp-route-id="@Model.Id_Usuario"
+                   class="btn-primary-custom professional-button-link">
+                    Editar profesional
+                </a>
+
+                <a asp-controller="Profesional"
+                   asp-action="Delete"
+                   asp-route-id="@Model.Id_Usuario"
+                   class="btn-google professional-danger-link">
+                    Dar de baja
+                </a>
+
+                <p class="auth-switch"><a asp-controller="Profesional" asp-action="Index">Volver</a></p>
+            }
+
+            @if (esEdit)
+            {
+                <button type="submit" class="btn-primary-custom">Guardar cambios</button>
+                <p class="auth-switch">
+                    <a asp-controller="Profesional" asp-action="Details" asp-route-id="@Model.Id_Usuario">Cancelar</a>
+                </p>
+            }
+
+            @if (esDelete)
+            {
+                <button type="submit" class="btn-primary-custom professional-delete-button">Confirmar baja</button>
+                <p class="auth-switch">
+                    <a asp-controller="Profesional" asp-action="Details" asp-route-id="@Model.Id_Usuario">Cancelar</a>
+                </p>
+            }
+
+            @if (esMiPerfil)
+            {
+                <a asp-controller="Profesional"
+                   asp-action="EditarMiPerfil"
+                   class="btn-primary-custom professional-button-link">
+                    Editar mi perfil
+                </a>
+
+                <a asp-controller="Profesional"
+                   asp-action="BajaMiPerfil"
+                   class="btn-google professional-danger-link">
+                    Dar de baja mi perfil
+                </a>
+
+                <p class="auth-switch"><a asp-controller="Home" asp-action="Index">Volver</a></p>
+            }
+
+            @if (esEditMiPerfil)
+            {
+                <button type="submit" class="btn-primary-custom">Guardar cambios</button>
+                <p class="auth-switch"><a asp-controller="Profesional" asp-action="MiPerfil">Cancelar</a></p>
+            }
+
+            @if (esBajaMiPerfil)
+            {
+                <button type="submit" class="btn-primary-custom professional-delete-button">Confirmar baja de mi perfil</button>
+                <p class="auth-switch"><a asp-controller="Profesional" asp-action="MiPerfil">Cancelar</a></p>
+            }
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    @if (esCreate || esEdicion)
+    {
+        <script>
+            document.getElementById("profesionalForm").addEventListener("submit", function (event) {
+                const serviciosSeleccionados = document.querySelectorAll('input[name="IdsServiciosSeleccionados"]:checked');
+                const error = document.getElementById("serviciosFrontError");
+
+                if (serviciosSeleccionados.length === 0) {
+                    event.preventDefault();
+                    error.textContent = "Debe seleccionar al menos un servicio.";
+                } else {
+                    error.textContent = "";
+                }
+            });
+        </script>
+    }
+}
