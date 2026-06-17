@@ -205,7 +205,7 @@
             @if (esCreate)
             {
                 <button type="submit" class="btn-primary-custom">Crear profesional</button>
-                <p class="auth-switch"><a asp-controller="Profesional" asp-action="Index">Volver</a></p>
+                <a asp-controller="Profesional" asp-action="Index" class="professional-back-link">Volver</a>
             }
 
             @if (esDetails)
@@ -224,23 +224,19 @@
                     Dar de baja
                 </a>
 
-                <p class="auth-switch"><a asp-controller="Profesional" asp-action="Index">Volver</a></p>
+                <a asp-controller="Profesional" asp-action="Index" class="professional-back-link">Volver</a>
             }
 
             @if (esEdit)
             {
                 <button type="submit" class="btn-primary-custom">Guardar cambios</button>
-                <p class="auth-switch">
-                    <a asp-controller="Profesional" asp-action="Details" asp-route-id="@Model.Id_Usuario">Cancelar</a>
-                </p>
+                <a asp-controller="Profesional" asp-action="Details" asp-route-id="@Model.Id_Usuario" class="professional-back-link">Cancelar</a>
             }
 
             @if (esDelete)
             {
                 <button type="submit" class="btn-primary-custom professional-delete-button">Confirmar baja</button>
-                <p class="auth-switch">
-                    <a asp-controller="Profesional" asp-action="Details" asp-route-id="@Model.Id_Usuario">Cancelar</a>
-                </p>
+                <a asp-controller="Profesional" asp-action="Details" asp-route-id="@Model.Id_Usuario" class="professional-back-link">Cancelar</a>
             }
 
             @if (esMiPerfil)
@@ -257,19 +253,19 @@
                     Dar de baja mi perfil
                 </a>
 
-                <p class="auth-switch"><a asp-controller="Home" asp-action="Index">Volver</a></p>
+                <a asp-controller="Home" asp-action="Index" class="professional-back-link">Volver</a>
             }
 
             @if (esEditMiPerfil)
             {
                 <button type="submit" class="btn-primary-custom">Guardar cambios</button>
-                <p class="auth-switch"><a asp-controller="Profesional" asp-action="MiPerfil">Cancelar</a></p>
+                <a asp-controller="Profesional" asp-action="MiPerfil" class="professional-back-link">Cancelar</a>
             }
 
             @if (esBajaMiPerfil)
             {
                 <button type="submit" class="btn-primary-custom professional-delete-button">Confirmar baja de mi perfil</button>
-                <p class="auth-switch"><a asp-controller="Profesional" asp-action="MiPerfil">Cancelar</a></p>
+                <a asp-controller="Profesional" asp-action="MiPerfil" class="professional-back-link">Cancelar</a>
             }
         </form>
     </div>
