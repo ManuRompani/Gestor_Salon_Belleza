@@ -25,7 +25,7 @@ namespace Gestor_Salon_Belleza.Controllers
         // =========================
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> AdminIndex()
         {
             var profesionales = await _context.Profesionales
                 .Include(p => p.Usuario)
