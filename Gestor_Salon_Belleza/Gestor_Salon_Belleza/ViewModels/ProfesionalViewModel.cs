@@ -31,6 +31,10 @@ namespace Gestor_Salon_Belleza.ViewModels
 
         public string? UrlImagen { get; set; }
 
+        // Recibe el archivo real desde el formulario.
+        [Display(Name = "Imagen")]
+        public IFormFile? ImagenArchivo { get; set; }
+
         public string? Descripcion { get; set; }
 
         public List<int> IdsServiciosSeleccionados { get; set; } = new();

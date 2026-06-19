@@ -13,29 +13,52 @@ namespace Gestor_Salon_Belleza.Controllers
     [Authorize(Roles = "Administrador,Profesional")]
     public class ProfesionalController : Controller
     {
+        private const string VistaForm = "Form";
+
+        private const string ModoCreate = "Create";
+        private const string ModoDetails = "Details";
+        private const string ModoEdit = "Edit";
+        private const string ModoDelete = "Delete";
+        private const string ModoMiPerfil = "MiPerfil";
+        private const string ModoEditMiPerfil = "EditMiPerfil";
+        private const string ModoBajaMiPerfil = "BajaMiPerfil";
+
+        private const long TamanoMaximoImagen = 2 * 1024 * 1024;
+
+        private static readonly string[] ExtensionesImagenPermitidas =
+        {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp"
+        };
+
         private readonly AppDBContext _context;
         private readonly ILogger<ProfesionalController> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProfesionalController(AppDBContext context, ILogger<ProfesionalController> logger)
+        public ProfesionalController(
+            AppDBContext context,
+            ILogger<ProfesionalController> logger,
+            IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
-
-        // =========================
-        // ADMIN - LISTADO
-        // =========================
-
 
         [HttpGet]
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> AdminIndex()
         {
             var profesionales = await _context.Profesionales
+                .AsNoTracking()
                 .Include(p => p.Usuario)
                 .Include(p => p.Profesional_Servicios)
                     .ThenInclude(ps => ps.Servicio)
                 .Where(p => !p.Usuario.Eliminado)
+                .OrderBy(p => p.Usuario.Apellido)
+                .ThenBy(p => p.Usuario.Nombre)
                 .ToListAsync();
 
             var model = profesionales.Select(p => new ProfesionalListItemViewModel
@@ -52,70 +75,40 @@ namespace Gestor_Salon_Belleza.Controllers
             return View(model);
         }
 
-        // =========================
-        // ADMIN - CREATE
-        // =========================
-
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create()
         {
-            var model = new ProfesionalViewModel();
-
-            await CargarServiciosDisponibles(model);
-
-            ViewBag.Modo = "Create";
-
-            return View("Form", model);
+            return await Formulario(new ProfesionalViewModel(), ModoCreate);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create(ProfesionalViewModel model)
         {
-            ValidarPasswordCreacion(model);
-            ValidarServiciosSeleccionados(model);
+            await ValidarFormulario(model, ModoCreate);
 
             if (!ModelState.IsValid)
             {
-                await CargarServiciosDisponibles(model);
-                ViewBag.Modo = "Create";
-                return View("Form", model);
+                return await Formulario(model, ModoCreate);
             }
 
-            bool emailYaExiste = await _context.Usuarios
-                .AnyAsync(u => u.Email == model.Email && !u.Eliminado);
-
-            if (emailYaExiste)
-            {
-                ModelState.AddModelError(nameof(model.Email), "Ya existe un usuario registrado con ese email.");
-                await CargarServiciosDisponibles(model);
-                ViewBag.Modo = "Create";
-                return View("Form", model);
-            }
-
-            var idsServiciosSeleccionados = model.IdsServiciosSeleccionados
-                .Distinct()
-                .ToList();
-
-            bool serviciosValidos = await ValidarServiciosExistentes(idsServiciosSeleccionados);
-
-            if (!serviciosValidos)
-            {
-                ModelState.AddModelError(nameof(model.IdsServiciosSeleccionados), "Uno o más servicios seleccionados no son válidos.");
-                await CargarServiciosDisponibles(model);
-                ViewBag.Modo = "Create";
-                return View("Form", model);
-            }
+            var idsServiciosSeleccionados = ObtenerIdsServiciosNormalizados(model);
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
+            string? rutaImagenGuardada = null;
+
             try
             {
+                rutaImagenGuardada = await GuardarImagenAsync(model.ImagenArchivo);
+
                 var usuario = new Usuario
                 {
-                    Nombre = model.Nombre,
-                    Apellido = model.Apellido,
-                    Email = model.Email,
+                    Nombre = model.Nombre.Trim(),
+                    Apellido = model.Apellido.Trim(),
+                    Email = model.Email.Trim(),
                     Telefono = model.Telefono,
                     Password = model.Password,
                     Id_Rol = (int)EnumRoles.Profesional,
@@ -128,83 +121,49 @@ namespace Gestor_Salon_Belleza.Controllers
                 var profesional = new Profesional
                 {
                     Id_Usuario = usuario.Id_Usuario,
-                    UrlImagen = model.UrlImagen,
+                    UrlImagen = rutaImagenGuardada,
                     Descripcion = model.Descripcion
                 };
 
                 _context.Profesionales.Add(profesional);
-                await _context.SaveChangesAsync();
 
-                foreach (var idServicio in idsServiciosSeleccionados)
-                {
-                    var profesionalServicio = new Profesional_Servicio
-                    {
-                        Id_Profesional = profesional.Id_Usuario,
-                        Id_Servicio = idServicio
-                    };
-
-                    _context.Profesional_Servicios.Add(profesionalServicio);
-                }
+                AgregarServiciosAProfesional(profesional.Id_Usuario, idsServiciosSeleccionados);
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AdminIndex));
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
 
+                EliminarImagenFisica(rutaImagenGuardada);
+
                 _logger.LogError(ex, "Error al crear profesional.");
 
                 ModelState.AddModelError(string.Empty, "Ocurrió un error al crear el profesional.");
-                await CargarServiciosDisponibles(model);
-                ViewBag.Modo = "Create";
-
-                return View("Form", model);
+                return await Formulario(model, ModoCreate);
             }
         }
 
-        // =========================
-        // ADMIN - READ
-        // =========================
-
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Details(int id)
         {
-            var model = await ObtenerProfesionalViewModel(id);
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Modo = "Details";
-
-            return View("Form", model);
+            return await FormularioDesdeProfesional(id, ModoDetails);
         }
 
-        // =========================
-        // ADMIN - UPDATE
-        // =========================
-
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await ObtenerProfesionalViewModel(id);
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Modo = "Edit";
-
-            return View("Form", model);
+            return await FormularioDesdeProfesional(id, ModoEdit);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(ProfesionalViewModel model)
         {
             if (model.Id_Usuario == null)
@@ -212,49 +171,33 @@ namespace Gestor_Salon_Belleza.Controllers
                 return BadRequest();
             }
 
-            ValidarPasswordEdicion(model);
-            ValidarServiciosSeleccionados(model);
+            await ValidarFormulario(model, ModoEdit);
 
             if (!ModelState.IsValid)
             {
-                await CargarServiciosDisponibles(model);
-                ViewBag.Modo = "Edit";
-                return View("Form", model);
+                return await Formulario(model, ModoEdit);
             }
 
-            var resultado = await ActualizarProfesional(model.Id_Usuario.Value, model, "Edit");
+            bool actualizado = await ActualizarProfesional(model.Id_Usuario.Value, model, ModoEdit);
 
-            if (!resultado.Exito)
+            if (!actualizado)
             {
-                await CargarServiciosDisponibles(model);
-                ViewBag.Modo = "Edit";
-                return View("Form", model);
+                return await Formulario(model, ModoEdit);
             }
 
             return RedirectToAction(nameof(Details), new { id = model.Id_Usuario.Value });
         }
 
-        // =========================
-        // ADMIN - DELETE LÓGICO
-        // =========================
-
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
-            var model = await ObtenerProfesionalViewModel(id);
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Modo = "Delete";
-
-            return View("Form", model);
+            return await FormularioDesdeProfesional(id, ModoDelete);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(ProfesionalViewModel model)
         {
             if (model.Id_Usuario == null)
@@ -262,26 +205,18 @@ namespace Gestor_Salon_Belleza.Controllers
                 return BadRequest();
             }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id_Usuario == model.Id_Usuario.Value && !u.Eliminado);
+            bool eliminado = await EliminarUsuarioLogicamente(model.Id_Usuario.Value);
 
-            if (usuario == null)
+            if (!eliminado)
             {
                 return NotFound();
             }
 
-            usuario.Eliminado = true;
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AdminIndex));
         }
 
-        // =========================
-        // PROFESIONAL - MI PERFIL
-        // =========================
-
         [HttpGet]
+        [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> MiPerfil()
         {
             int? idUsuario = ObtenerIdUsuarioLogueado();
@@ -291,19 +226,11 @@ namespace Gestor_Salon_Belleza.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var model = await ObtenerProfesionalViewModel(idUsuario.Value);
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Modo = "MiPerfil";
-
-            return View("Form", model);
+            return await FormularioDesdeProfesional(idUsuario.Value, ModoMiPerfil);
         }
 
         [HttpGet]
+        [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> EditarMiPerfil()
         {
             int? idUsuario = ObtenerIdUsuarioLogueado();
@@ -313,20 +240,12 @@ namespace Gestor_Salon_Belleza.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var model = await ObtenerProfesionalViewModel(idUsuario.Value);
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Modo = "EditMiPerfil";
-
-            return View("Form", model);
+            return await FormularioDesdeProfesional(idUsuario.Value, ModoEditMiPerfil);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> EditarMiPerfil(ProfesionalViewModel model)
         {
             int? idUsuario = ObtenerIdUsuarioLogueado();
@@ -338,29 +257,25 @@ namespace Gestor_Salon_Belleza.Controllers
 
             model.Id_Usuario = idUsuario.Value;
 
-            ValidarPasswordEdicion(model);
-            ValidarServiciosSeleccionados(model);
+            await ValidarFormulario(model, ModoEditMiPerfil);
 
             if (!ModelState.IsValid)
             {
-                await CargarServiciosDisponibles(model);
-                ViewBag.Modo = "EditMiPerfil";
-                return View("Form", model);
+                return await Formulario(model, ModoEditMiPerfil);
             }
 
-            var resultado = await ActualizarProfesional(idUsuario.Value, model, "EditMiPerfil");
+            bool actualizado = await ActualizarProfesional(idUsuario.Value, model, ModoEditMiPerfil);
 
-            if (!resultado.Exito)
+            if (!actualizado)
             {
-                await CargarServiciosDisponibles(model);
-                ViewBag.Modo = "EditMiPerfil";
-                return View("Form", model);
+                return await Formulario(model, ModoEditMiPerfil);
             }
 
             return RedirectToAction(nameof(MiPerfil));
         }
 
         [HttpGet]
+        [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> BajaMiPerfil()
         {
             int? idUsuario = ObtenerIdUsuarioLogueado();
@@ -370,20 +285,12 @@ namespace Gestor_Salon_Belleza.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var model = await ObtenerProfesionalViewModel(idUsuario.Value);
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Modo = "BajaMiPerfil";
-
-            return View("Form", model);
+            return await FormularioDesdeProfesional(idUsuario.Value, ModoBajaMiPerfil);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> BajaMiPerfil(ProfesionalViewModel model)
         {
             int? idUsuario = ObtenerIdUsuarioLogueado();
@@ -393,26 +300,38 @@ namespace Gestor_Salon_Belleza.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Id_Usuario == idUsuario.Value && !u.Eliminado);
+            bool eliminado = await EliminarUsuarioLogicamente(idUsuario.Value);
 
-            if (usuario == null)
+            if (!eliminado)
             {
                 return NotFound();
             }
-
-            usuario.Eliminado = true;
-
-            await _context.SaveChangesAsync();
 
             HttpContext.Session.Clear();
 
             return RedirectToAction("Login", "Account");
         }
 
-        // =========================
-        // MÉTODOS PRIVADOS
-        // =========================
+        private async Task<IActionResult> Formulario(ProfesionalViewModel model, string modo)
+        {
+            await CargarServiciosDisponibles(model);
+
+            ViewBag.Modo = modo;
+
+            return View(VistaForm, model);
+        }
+
+        private async Task<IActionResult> FormularioDesdeProfesional(int idUsuario, string modo)
+        {
+            var model = await ObtenerProfesionalViewModel(idUsuario);
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return await Formulario(model, modo);
+        }
 
         private int? ObtenerIdUsuarioLogueado()
         {
@@ -422,6 +341,7 @@ namespace Gestor_Salon_Belleza.Controllers
         private async Task<ProfesionalViewModel?> ObtenerProfesionalViewModel(int idUsuario)
         {
             var profesional = await _context.Profesionales
+                .AsNoTracking()
                 .Include(p => p.Usuario)
                 .Include(p => p.Profesional_Servicios)
                 .FirstOrDefaultAsync(p => p.Id_Usuario == idUsuario && !p.Usuario.Eliminado);
@@ -431,7 +351,7 @@ namespace Gestor_Salon_Belleza.Controllers
                 return null;
             }
 
-            var model = new ProfesionalViewModel
+            return new ProfesionalViewModel
             {
                 Id_Usuario = profesional.Id_Usuario,
                 Nombre = profesional.Usuario.Nombre,
@@ -444,15 +364,12 @@ namespace Gestor_Salon_Belleza.Controllers
                     .Select(ps => ps.Id_Servicio)
                     .ToList()
             };
-
-            await CargarServiciosDisponibles(model);
-
-            return model;
         }
 
         private async Task CargarServiciosDisponibles(ProfesionalViewModel model)
         {
             model.ServiciosDisponibles = await _context.Servicios
+                .AsNoTracking()
                 .OrderBy(s => s.Nombre)
                 .Select(s => new SelectListItem
                 {
@@ -462,44 +379,34 @@ namespace Gestor_Salon_Belleza.Controllers
                 .ToListAsync();
         }
 
-        private void ValidarPasswordCreacion(ProfesionalViewModel model)
+        private async Task ValidarFormulario(ProfesionalViewModel model, string modo)
         {
-            if (string.IsNullOrWhiteSpace(model.Password))
-            {
-                ModelState.AddModelError(nameof(model.Password), "La contraseña es obligatoria.");
-            }
-            else if (model.Password.Length < 8)
-            {
-                ModelState.AddModelError(nameof(model.Password), "Mínimo 8 caracteres.");
-            }
+            ValidarPassword(model, modo);
+            ValidarServiciosSeleccionados(model);
+            ValidarImagen(model.ImagenArchivo);
 
-            if (string.IsNullOrWhiteSpace(model.ConfirmarPassword))
-            {
-                ModelState.AddModelError(nameof(model.ConfirmarPassword), "Debe confirmar la contraseña.");
-            }
-
-            if (!string.IsNullOrWhiteSpace(model.Password) &&
-                !string.IsNullOrWhiteSpace(model.ConfirmarPassword) &&
-                model.Password != model.ConfirmarPassword)
-            {
-                ModelState.AddModelError(nameof(model.ConfirmarPassword), "Las contraseñas no coinciden.");
-            }
+            await ValidarEmailUnico(model);
+            await ValidarServiciosExistentes(model);
         }
 
-        private void ValidarPasswordEdicion(ProfesionalViewModel model)
+        private void ValidarPassword(ProfesionalViewModel model, string modo)
         {
+            bool esCreacion = modo == ModoCreate;
+
             bool quiereCambiarPassword =
                 !string.IsNullOrWhiteSpace(model.Password) ||
                 !string.IsNullOrWhiteSpace(model.ConfirmarPassword);
 
-            if (!quiereCambiarPassword)
+            if (!esCreacion && !quiereCambiarPassword)
             {
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(model.Password))
             {
-                ModelState.AddModelError(nameof(model.Password), "Debe ingresar la nueva contraseña.");
+                ModelState.AddModelError(
+                    nameof(model.Password),
+                    esCreacion ? "La contraseña es obligatoria." : "Debe ingresar la nueva contraseña.");
             }
             else if (model.Password.Length < 8)
             {
@@ -508,7 +415,9 @@ namespace Gestor_Salon_Belleza.Controllers
 
             if (string.IsNullOrWhiteSpace(model.ConfirmarPassword))
             {
-                ModelState.AddModelError(nameof(model.ConfirmarPassword), "Debe confirmar la nueva contraseña.");
+                ModelState.AddModelError(
+                    nameof(model.ConfirmarPassword),
+                    esCreacion ? "Debe confirmar la contraseña." : "Debe confirmar la nueva contraseña.");
             }
 
             if (!string.IsNullOrWhiteSpace(model.Password) &&
@@ -527,45 +436,80 @@ namespace Gestor_Salon_Belleza.Controllers
             }
         }
 
-        private async Task<bool> ValidarServiciosExistentes(List<int> idsServicios)
+        private async Task ValidarEmailUnico(ProfesionalViewModel model)
         {
-            if (idsServicios == null || !idsServicios.Any())
+            if (string.IsNullOrWhiteSpace(model.Email))
             {
-                return false;
+                return;
+            }
+
+            string email = model.Email.Trim();
+
+            bool emailYaExiste = await _context.Usuarios.AnyAsync(u =>
+                u.Email == email &&
+                !u.Eliminado &&
+                (model.Id_Usuario == null || u.Id_Usuario != model.Id_Usuario.Value));
+
+            if (emailYaExiste)
+            {
+                ModelState.AddModelError(nameof(model.Email), "Ya existe un usuario registrado con ese email.");
+            }
+        }
+
+        private async Task ValidarServiciosExistentes(ProfesionalViewModel model)
+        {
+            var idsServicios = ObtenerIdsServiciosNormalizados(model);
+
+            if (!idsServicios.Any())
+            {
+                return;
             }
 
             int cantidadServiciosExistentes = await _context.Servicios
                 .CountAsync(s => idsServicios.Contains(s.Id_Servicio));
 
-            return cantidadServiciosExistentes == idsServicios.Count;
-        }
-
-        private async Task<(bool Exito, string? Error)> ActualizarProfesional(int idUsuario, ProfesionalViewModel model, string modo)
-        {
-            bool emailYaExiste = await _context.Usuarios
-                .AnyAsync(u =>
-                    u.Email == model.Email &&
-                    u.Id_Usuario != idUsuario &&
-                    !u.Eliminado);
-
-            if (emailYaExiste)
-            {
-                ModelState.AddModelError(nameof(model.Email), "Ya existe otro usuario registrado con ese email.");
-                return (false, "Email duplicado");
-            }
-
-            var idsServiciosSeleccionados = model.IdsServiciosSeleccionados
-                .Distinct()
-                .ToList();
-
-            bool serviciosValidos = await ValidarServiciosExistentes(idsServiciosSeleccionados);
-
-            if (!serviciosValidos)
+            if (cantidadServiciosExistentes != idsServicios.Count)
             {
                 ModelState.AddModelError(nameof(model.IdsServiciosSeleccionados), "Uno o más servicios seleccionados no son válidos.");
-                return (false, "Servicios inválidos");
+            }
+        }
+
+        private static List<int> ObtenerIdsServiciosNormalizados(ProfesionalViewModel model)
+        {
+            return model.IdsServiciosSeleccionados?
+                .Distinct()
+                .ToList() ?? new List<int>();
+        }
+
+        private void ValidarImagen(IFormFile? imagen)
+        {
+            if (imagen == null || imagen.Length == 0)
+            {
+                return;
             }
 
+            if (imagen.Length > TamanoMaximoImagen)
+            {
+                ModelState.AddModelError(nameof(ProfesionalViewModel.ImagenArchivo), "La imagen no puede superar los 2 MB.");
+                return;
+            }
+
+            string extension = Path.GetExtension(imagen.FileName).ToLowerInvariant();
+
+            if (!ExtensionesImagenPermitidas.Contains(extension))
+            {
+                ModelState.AddModelError(nameof(ProfesionalViewModel.ImagenArchivo), "La imagen debe ser JPG, JPEG, PNG o WEBP.");
+                return;
+            }
+
+            if (!imagen.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(ProfesionalViewModel.ImagenArchivo), "El archivo seleccionado no es una imagen válida.");
+            }
+        }
+
+        private async Task<bool> ActualizarProfesional(int idUsuario, ProfesionalViewModel model, string modo)
+        {
             var profesional = await _context.Profesionales
                 .Include(p => p.Usuario)
                 .Include(p => p.Profesional_Servicios)
@@ -574,16 +518,22 @@ namespace Gestor_Salon_Belleza.Controllers
             if (profesional == null)
             {
                 ModelState.AddModelError(string.Empty, "No se encontró el profesional.");
-                return (false, "Profesional no encontrado");
+                return false;
             }
+
+            var idsServiciosSeleccionados = ObtenerIdsServiciosNormalizados(model);
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
+            string? imagenAnterior = null;
+            string? nuevaImagenGuardada = null;
+            bool cambioImagen = false;
+
             try
             {
-                profesional.Usuario.Nombre = model.Nombre;
-                profesional.Usuario.Apellido = model.Apellido;
-                profesional.Usuario.Email = model.Email;
+                profesional.Usuario.Nombre = model.Nombre.Trim();
+                profesional.Usuario.Apellido = model.Apellido.Trim();
+                profesional.Usuario.Email = model.Email.Trim();
                 profesional.Usuario.Telefono = model.Telefono;
 
                 if (!string.IsNullOrWhiteSpace(model.Password))
@@ -591,37 +541,119 @@ namespace Gestor_Salon_Belleza.Controllers
                     profesional.Usuario.Password = model.Password;
                 }
 
-                profesional.UrlImagen = model.UrlImagen;
+                if (model.ImagenArchivo != null && model.ImagenArchivo.Length > 0)
+                {
+                    imagenAnterior = profesional.UrlImagen;
+                    nuevaImagenGuardada = await GuardarImagenAsync(model.ImagenArchivo);
+
+                    profesional.UrlImagen = nuevaImagenGuardada;
+                    cambioImagen = true;
+                }
+
                 profesional.Descripcion = model.Descripcion;
 
                 _context.Profesional_Servicios.RemoveRange(profesional.Profesional_Servicios);
-
-                foreach (var idServicio in idsServiciosSeleccionados)
-                {
-                    var profesionalServicio = new Profesional_Servicio
-                    {
-                        Id_Profesional = profesional.Id_Usuario,
-                        Id_Servicio = idServicio
-                    };
-
-                    _context.Profesional_Servicios.Add(profesionalServicio);
-                }
+                AgregarServiciosAProfesional(profesional.Id_Usuario, idsServiciosSeleccionados);
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return (true, null);
+                if (cambioImagen)
+                {
+                    EliminarImagenFisica(imagenAnterior);
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
 
+                EliminarImagenFisica(nuevaImagenGuardada);
+
                 _logger.LogError(ex, "Error al actualizar profesional. Modo: {Modo}", modo);
 
                 ModelState.AddModelError(string.Empty, "Ocurrió un error al actualizar el profesional.");
 
-                return (false, "Error interno");
+                return false;
             }
+        }
+
+        private void AgregarServiciosAProfesional(int idProfesional, IEnumerable<int> idsServicios)
+        {
+            foreach (int idServicio in idsServicios)
+            {
+                _context.Profesional_Servicios.Add(new Profesional_Servicio
+                {
+                    Id_Profesional = idProfesional,
+                    Id_Servicio = idServicio
+                });
+            }
+        }
+
+        private async Task<bool> EliminarUsuarioLogicamente(int idUsuario)
+        {
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Id_Usuario == idUsuario && !u.Eliminado);
+
+            if (usuario == null)
+            {
+                return false;
+            }
+
+            usuario.Eliminado = true;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        private async Task<string?> GuardarImagenAsync(IFormFile? imagen)
+        {
+            if (imagen == null || imagen.Length == 0)
+            {
+                return null;
+            }
+
+            string extension = Path.GetExtension(imagen.FileName).ToLowerInvariant();
+            string nombreArchivo = $"{Guid.NewGuid():N}{extension}";
+
+            string carpetaRelativa = Path.Combine("uploads", "profesionales");
+            string carpetaFisica = Path.Combine(ObtenerWebRootPath(), carpetaRelativa);
+
+            Directory.CreateDirectory(carpetaFisica);
+
+            string rutaFisica = Path.Combine(carpetaFisica, nombreArchivo);
+
+            await using var stream = new FileStream(rutaFisica, FileMode.Create);
+            await imagen.CopyToAsync(stream);
+
+            return "/" + Path.Combine(carpetaRelativa, nombreArchivo).Replace("\\", "/");
+        }
+
+        private void EliminarImagenFisica(string? rutaRelativa)
+        {
+            if (string.IsNullOrWhiteSpace(rutaRelativa))
+            {
+                return;
+            }
+
+            string rutaNormalizada = rutaRelativa
+                .TrimStart('/')
+                .Replace("/", Path.DirectorySeparatorChar.ToString());
+
+            string rutaFisica = Path.Combine(ObtenerWebRootPath(), rutaNormalizada);
+
+            if (System.IO.File.Exists(rutaFisica))
+            {
+                System.IO.File.Delete(rutaFisica);
+            }
+        }
+
+        private string ObtenerWebRootPath()
+        {
+            return _webHostEnvironment.WebRootPath
+                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
         }
     }
 }

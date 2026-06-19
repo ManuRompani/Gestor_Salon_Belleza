@@ -1,7 +1,7 @@
 @model Gestor_Salon_Belleza.ViewModels.ProfesionalViewModel
 
 @{
-    string modo = ViewBag.Modo as string ?? "Create";
+    string modo = (ViewBag.Modo as string ?? "Create").Trim();
 
     bool esCreate = modo == "Create";
     bool esDetails = modo == "Details";
@@ -12,32 +12,138 @@
     bool esEditMiPerfil = modo == "EditMiPerfil";
     bool esBajaMiPerfil = modo == "BajaMiPerfil";
 
-    bool esLectura = esDetails || esMiPerfil;
     bool esBaja = esDelete || esBajaMiPerfil;
     bool esEdicion = esEdit || esEditMiPerfil;
-
+    bool esLectura = esDetails || esMiPerfil;
     bool soloLectura = esLectura || esBaja;
 
-    string titulo = esCreate ? "Crear Profesional"
-        : esEdit ? "Editar Profesional"
-        : esDelete ? "Dar de baja Profesional"
-        : esMiPerfil ? "Mi Perfil Profesional"
-        : esEditMiPerfil ? "Editar Mi Perfil"
-        : esBajaMiPerfil ? "Dar de baja Mi Perfil"
-        : "Detalle Profesional";
+    bool mostrarPassword = esCreate || esEdicion;
+    bool validarServiciosFront = esCreate || esEdicion;
 
-    string subtitulo = esCreate ? "ALTA DE PROFESIONAL"
-        : esEdit || esEditMiPerfil ? "MODIFICACION DE DATOS"
-        : esDelete || esBajaMiPerfil ? "BAJA LOGICA"
-        : esMiPerfil ? "PERFIL PROFESIONAL"
-        : "CONSULTA DE DATOS";
+    const string accionAdminIndex = "AdminIndex";
+    const string claseVolver = "professional-back-link";
 
-    string accionFormulario = esCreate ? "Create"
-        : esEdit ? "Edit"
-        : esDelete ? "Delete"
-        : esEditMiPerfil ? "EditarMiPerfil"
-        : esBajaMiPerfil ? "BajaMiPerfil"
-        : "Details";
+    string titulo = modo switch
+    {
+        "Create" => "Crear Profesional",
+        "Edit" => "Editar Profesional",
+        "Delete" => "Dar de baja Profesional",
+        "MiPerfil" => "Mi Perfil Profesional",
+        "EditMiPerfil" => "Editar Mi Perfil",
+        "BajaMiPerfil" => "Dar de baja Mi Perfil",
+        _ => "Detalle Profesional"
+    };
+
+    string subtitulo = modo switch
+    {
+        "Create" => "ALTA DE PROFESIONAL",
+        "Edit" or "EditMiPerfil" => "MODIFICACION DE DATOS",
+        "Delete" or "BajaMiPerfil" => "BAJA LOGICA",
+        "MiPerfil" => "PERFIL PROFESIONAL",
+        _ => "CONSULTA DE DATOS"
+    };
+
+    string accionFormulario = modo switch
+    {
+        "Create" => "Create",
+        "Edit" => "Edit",
+        "Delete" => "Delete",
+        "EditMiPerfil" => "EditarMiPerfil",
+        "BajaMiPerfil" => "BajaMiPerfil",
+        _ => "Details"
+    };
+
+    string? textoAlertaBaja = modo switch
+    {
+        "Delete" => "Esta accion dara de baja al profesional de forma logica. No se eliminara fisicamente de la base de datos.",
+        "BajaMiPerfil" => "Esta accion dara de baja tu perfil profesional. Tu usuario quedara marcado como eliminado.",
+        _ => null
+    };
+
+    var acciones = new List<(string Tipo, string Texto, string Clase, string Controller, string Action, object? RouteValues)>();
+
+    void AgregarSubmit(string texto, string clase)
+    {
+        acciones.Add(("submit", texto, clase, string.Empty, string.Empty, null));
+    }
+
+    void AgregarLink(
+        string texto,
+        string action,
+        string clase,
+        object? routeValues = null,
+        string controller = "Profesional")
+    {
+        acciones.Add(("link", texto, clase, controller, action, routeValues));
+    }
+
+    void AgregarVolver()
+    {
+        AgregarLink("Volver", accionAdminIndex, claseVolver);
+    }
+
+    void AgregarCancelar(string action, object? routeValues = null)
+    {
+        AgregarLink("Cancelar", action, claseVolver, routeValues);
+    }
+
+    switch (modo)
+    {
+        case "Create":
+            AgregarSubmit("Crear profesional", "btn-primary-custom");
+            AgregarVolver();
+            break;
+
+        case "Details":
+            AgregarLink(
+                "Editar profesional",
+                "Edit",
+                "btn-primary-custom professional-button-link",
+                new { id = Model.Id_Usuario });
+
+            AgregarLink(
+                "Dar de baja",
+                "Delete",
+                "btn-google professional-danger-link",
+                new { id = Model.Id_Usuario });
+
+            AgregarVolver();
+            break;
+
+        case "Edit":
+            AgregarSubmit("Guardar cambios", "btn-primary-custom");
+            AgregarCancelar("Details", new { id = Model.Id_Usuario });
+            break;
+
+        case "Delete":
+            AgregarSubmit("Confirmar baja", "btn-primary-custom professional-delete-button");
+            AgregarCancelar("Details", new { id = Model.Id_Usuario });
+            break;
+
+        case "MiPerfil":
+            AgregarLink(
+                "Editar mi perfil",
+                "EditarMiPerfil",
+                "btn-primary-custom professional-button-link");
+
+            AgregarLink(
+                "Dar de baja mi perfil",
+                "BajaMiPerfil",
+                "btn-google professional-danger-link");
+
+            AgregarVolver();
+            break;
+
+        case "EditMiPerfil":
+            AgregarSubmit("Guardar cambios", "btn-primary-custom");
+            AgregarCancelar("MiPerfil");
+            break;
+
+        case "BajaMiPerfil":
+            AgregarSubmit("Confirmar baja de mi perfil", "btn-primary-custom professional-delete-button");
+            AgregarCancelar("MiPerfil");
+            break;
+    }
 
     ViewData["Title"] = titulo;
 }
@@ -51,23 +157,17 @@
         <p class="auth-subtitle">@subtitulo</p>
         <h2 class="auth-title">@titulo</h2>
 
-        @if (esDelete)
+        @if (!string.IsNullOrWhiteSpace(textoAlertaBaja))
         {
             <div class="auth-error-alert professional-soft-alert">
-                Esta accion dara de baja al profesional de forma logica. No se eliminara fisicamente de la base de datos.
+                @textoAlertaBaja
             </div>
         }
 
-        @if (esBajaMiPerfil)
-        {
-            <div class="auth-error-alert professional-soft-alert">
-                Esta accion dara de baja tu perfil profesional. Tu usuario quedara marcado como eliminado.
-            </div>
-        }
-
-        <form asp-action="@accionFormulario"
-              asp-controller="Profesional"
+        <form asp-controller="Profesional"
+              asp-action="@accionFormulario"
               method="post"
+              enctype="multipart/form-data"
               class="auth-form professional-form-layout"
               id="profesionalForm">
 
@@ -77,6 +177,8 @@
             {
                 <input type="hidden" asp-for="Id_Usuario" />
             }
+
+            <input type="hidden" asp-for="UrlImagen" />
 
             @if (!ViewData.ModelState.IsValid)
             {
@@ -127,7 +229,7 @@
                 </div>
             </div>
 
-            @if (esCreate || esEdicion)
+            @if (mostrarPassword)
             {
                 <div class="form-group">
                     <label asp-for="Password">@(esCreate ? "Contraseña" : "Nueva Contraseña")</label>
@@ -154,12 +256,30 @@
             <h3 class="professional-section-heading">Datos profesionales</h3>
 
             <div class="form-group">
-                <label asp-for="UrlImagen">Imagen</label>
-                <input asp-for="UrlImagen"
-                       class="form-control"
-                       placeholder="https://..."
-                       disabled="@soloLectura" />
-                <span asp-validation-for="UrlImagen" class="text-validation-error"></span>
+                <label asp-for="ImagenArchivo">Imagen</label>
+
+                @if (!string.IsNullOrWhiteSpace(Model.UrlImagen))
+                {
+                    <div class="professional-current-image-box">
+                        <img src="@Model.UrlImagen"
+                             alt="Imagen del profesional"
+                             class="professional-current-image" />
+                    </div>
+                }
+
+                @if (!soloLectura)
+                {
+                    <input asp-for="ImagenArchivo"
+                           type="file"
+                           accept=".jpg,.jpeg,.png,.webp"
+                           class="form-control" />
+
+                    <small class="professional-help-text">
+                        Formatos permitidos: JPG, JPEG, PNG o WEBP. Tamaño máximo: 2 MB.
+                    </small>
+                }
+
+                <span asp-validation-for="ImagenArchivo" class="text-validation-error"></span>
             </div>
 
             <div class="form-group">
@@ -175,12 +295,13 @@
                 <label>Servicios que ofrece</label>
 
                 <div class="professional-services-panel">
-                    @if (Model.ServiciosDisponibles != null && Model.ServiciosDisponibles.Any())
+                    @if (Model.ServiciosDisponibles?.Any() == true)
                     {
                         foreach (var servicio in Model.ServiciosDisponibles)
                         {
-                            int servicioId = int.Parse(servicio.Value);
-                            bool seleccionado = Model.IdsServiciosSeleccionados.Contains(servicioId);
+                            bool idValido = int.TryParse(servicio.Value, out int servicioId);
+                            bool seleccionado = idValido &&
+                            (Model.IdsServiciosSeleccionados?.Contains(servicioId) ?? false);
 
                             <label class="professional-service-chip">
                                 <input type="checkbox"
@@ -202,71 +323,24 @@
                 <span id="serviciosFrontError" class="text-validation-error"></span>
             </div>
 
-            @if (esCreate)
-            {
-                <button type="submit" class="btn-primary-custom">Crear profesional</button>
-                <a asp-controller="Profesional" asp-action="Index" class="professional-back-link">Volver</a>
-            }
-
-            @if (esDetails)
-            {
-                <a asp-controller="Profesional"
-                   asp-action="Edit"
-                   asp-route-id="@Model.Id_Usuario"
-                   class="btn-primary-custom professional-button-link">
-                    Editar profesional
-                </a>
-
-                <a asp-controller="Profesional"
-                   asp-action="Delete"
-                   asp-route-id="@Model.Id_Usuario"
-                   class="btn-google professional-danger-link">
-                    Dar de baja
-                </a>
-
-                <a asp-controller="Profesional" asp-action="Index" class="professional-back-link">Volver</a>
-            }
-
-            @if (esEdit)
-            {
-                <button type="submit" class="btn-primary-custom">Guardar cambios</button>
-                <a asp-controller="Profesional" asp-action="Details" asp-route-id="@Model.Id_Usuario" class="professional-back-link">Cancelar</a>
-            }
-
-            @if (esDelete)
-            {
-                <button type="submit" class="btn-primary-custom professional-delete-button">Confirmar baja</button>
-                <a asp-controller="Profesional" asp-action="Details" asp-route-id="@Model.Id_Usuario" class="professional-back-link">Cancelar</a>
-            }
-
-            @if (esMiPerfil)
-            {
-                <a asp-controller="Profesional"
-                   asp-action="EditarMiPerfil"
-                   class="btn-primary-custom professional-button-link">
-                    Editar mi perfil
-                </a>
-
-                <a asp-controller="Profesional"
-                   asp-action="BajaMiPerfil"
-                   class="btn-google professional-danger-link">
-                    Dar de baja mi perfil
-                </a>
-
-                <a asp-controller="Home" asp-action="Index" class="professional-back-link">Volver</a>
-            }
-
-            @if (esEditMiPerfil)
-            {
-                <button type="submit" class="btn-primary-custom">Guardar cambios</button>
-                <a asp-controller="Profesional" asp-action="MiPerfil" class="professional-back-link">Cancelar</a>
-            }
-
-            @if (esBajaMiPerfil)
-            {
-                <button type="submit" class="btn-primary-custom professional-delete-button">Confirmar baja de mi perfil</button>
-                <a asp-controller="Profesional" asp-action="MiPerfil" class="professional-back-link">Cancelar</a>
-            }
+            <div class="professional-actions">
+                @foreach (var accion in acciones)
+                {
+                    if (accion.Tipo == "submit")
+                    {
+                        <button type="submit" class="@accion.Clase">
+                            @accion.Texto
+                        </button>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action(accion.Action, accion.Controller, accion.RouteValues)"
+                           class="@accion.Clase">
+                            @accion.Texto
+                        </a>
+                    }
+                }
+            </div>
         </form>
     </div>
 </section>
@@ -276,17 +350,26 @@
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-    @if (esCreate || esEdicion)
+    @if (validarServiciosFront)
     {
         <script>
-            document.getElementById("profesionalForm").addEventListener("submit", function (event) {
+            const profesionalForm = document.getElementById("profesionalForm");
+
+            profesionalForm?.addEventListener("submit", function (event) {
                 const serviciosSeleccionados = document.querySelectorAll('input[name="IdsServiciosSeleccionados"]:checked');
                 const error = document.getElementById("serviciosFrontError");
 
                 if (serviciosSeleccionados.length === 0) {
                     event.preventDefault();
-                    error.textContent = "Debe seleccionar al menos un servicio.";
-                } else {
+
+                    if (error) {
+                        error.textContent = "Debe seleccionar al menos un servicio.";
+                    }
+
+                    return;
+                }
+
+                if (error) {
                     error.textContent = "";
                 }
             });
