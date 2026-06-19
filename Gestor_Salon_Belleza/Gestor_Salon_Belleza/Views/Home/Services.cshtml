@@ -35,7 +35,7 @@
                             </span>
                             <span class="servicio-precio">$@servicio.Precio.ToString("N0")</span>
                         </div>
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-reservar">
+                        <a asp-controller="Books" asp-action="SelectProfessional" asp-route-serviceId="@servicio.Id_Servicio" class="btn btn-primary btn-reservar">
                             Reservar
                         </a>
                     </div>

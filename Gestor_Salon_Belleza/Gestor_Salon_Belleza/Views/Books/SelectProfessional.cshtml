@@ -1,0 +1,58 @@
+@using Gestor_Salon_Belleza.ViewModels
+@model BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Select Professional - Glow & Style";
+}
+@section DashboardServices {
+    <link rel="stylesheet" href="~/css/select-professional.css" asp-append-version="true" />
+}
+
+<div class="turnos-wrapper">
+    <div class="turnos-hero">
+        <span class="subtitle">Step 1 of 3</span>
+        <h1>Choose your professional</h1>
+        <p>Service: <strong>@Model.ServiceName</strong> (approx. @Model.DurationMinutes min)</p>
+    </div>
+
+    <div class="especialistas-grid">
+        @if (Model.Professionals != null && Model.Professionals.Any())
+        {
+            foreach (var prof in Model.Professionals)
+            {
+                <div class="especialista-card">
+                    <div class="especialista-imagen">
+                        @if (!string.IsNullOrEmpty(prof.ImageUrl))
+                        {
+                            <img src="@prof.ImageUrl" alt="@prof.FullName"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                        }
+                        <div class="especialista-iniciales"
+                             style="@(!string.IsNullOrEmpty(prof.ImageUrl) ? "display:none;" : "")">
+                            @(string.IsNullOrEmpty(prof.FullName) ? "?" : prof.FullName[0])
+                        </div>
+                    </div>
+                    <div class="especialista-info">
+                        <h2 class="especialista-nombre">@prof.FullName</h2>
+                        @if (!string.IsNullOrEmpty(prof.Description))
+                        {
+                            <p class="especialista-descripcion">@prof.Description</p>
+                        }
+                        <a asp-action="SelectSchedule"
+                           asp-route-serviceId="@Model.ServiceId"
+                           asp-route-professionalId="@prof.Id"
+                           class="btn btn-primary btn-turno">
+                            Select
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="turnos-empty">
+                <p>No professionals available for this service.</p>
+                <a asp-controller="Home" asp-action="Services" class="btn btn-secondary">Back to services</a>
+            </div>
+        }
+    </div>
+</div>

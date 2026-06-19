@@ -1,0 +1,378 @@
+@model Gestor_Salon_Belleza.ViewModels.ProfesionalViewModel
+
+@{
+    string modo = (ViewBag.Modo as string ?? "Create").Trim();
+
+    bool esCreate = modo == "Create";
+    bool esDetails = modo == "Details";
+    bool esEdit = modo == "Edit";
+    bool esDelete = modo == "Delete";
+
+    bool esMiPerfil = modo == "MiPerfil";
+    bool esEditMiPerfil = modo == "EditMiPerfil";
+    bool esBajaMiPerfil = modo == "BajaMiPerfil";
+
+    bool esBaja = esDelete || esBajaMiPerfil;
+    bool esEdicion = esEdit || esEditMiPerfil;
+    bool esLectura = esDetails || esMiPerfil;
+    bool soloLectura = esLectura || esBaja;
+
+    bool mostrarPassword = esCreate || esEdicion;
+    bool validarServiciosFront = esCreate || esEdicion;
+
+    const string accionAdminIndex = "AdminIndex";
+    const string claseVolver = "professional-back-link";
+
+    string titulo = modo switch
+    {
+        "Create" => "Crear Profesional",
+        "Edit" => "Editar Profesional",
+        "Delete" => "Dar de baja Profesional",
+        "MiPerfil" => "Mi Perfil Profesional",
+        "EditMiPerfil" => "Editar Mi Perfil",
+        "BajaMiPerfil" => "Dar de baja Mi Perfil",
+        _ => "Detalle Profesional"
+    };
+
+    string subtitulo = modo switch
+    {
+        "Create" => "ALTA DE PROFESIONAL",
+        "Edit" or "EditMiPerfil" => "MODIFICACION DE DATOS",
+        "Delete" or "BajaMiPerfil" => "BAJA LOGICA",
+        "MiPerfil" => "PERFIL PROFESIONAL",
+        _ => "CONSULTA DE DATOS"
+    };
+
+    string accionFormulario = modo switch
+    {
+        "Create" => "Create",
+        "Edit" => "Edit",
+        "Delete" => "Delete",
+        "EditMiPerfil" => "EditarMiPerfil",
+        "BajaMiPerfil" => "BajaMiPerfil",
+        _ => "Details"
+    };
+
+    string? textoAlertaBaja = modo switch
+    {
+        "Delete" => "Esta accion dara de baja al profesional de forma logica. No se eliminara fisicamente de la base de datos.",
+        "BajaMiPerfil" => "Esta accion dara de baja tu perfil profesional. Tu usuario quedara marcado como eliminado.",
+        _ => null
+    };
+
+    var acciones = new List<(string Tipo, string Texto, string Clase, string Controller, string Action, object? RouteValues)>();
+
+    void AgregarSubmit(string texto, string clase)
+    {
+        acciones.Add(("submit", texto, clase, string.Empty, string.Empty, null));
+    }
+
+    void AgregarLink(
+        string texto,
+        string action,
+        string clase,
+        object? routeValues = null,
+        string controller = "Profesional")
+    {
+        acciones.Add(("link", texto, clase, controller, action, routeValues));
+    }
+
+    void AgregarVolver()
+    {
+        AgregarLink("Volver", accionAdminIndex, claseVolver);
+    }
+
+    void AgregarCancelar(string action, object? routeValues = null)
+    {
+        AgregarLink("Cancelar", action, claseVolver, routeValues);
+    }
+
+    switch (modo)
+    {
+        case "Create":
+            AgregarSubmit("Crear profesional", "btn-primary-custom");
+            AgregarVolver();
+            break;
+
+        case "Details":
+            AgregarLink(
+                "Editar profesional",
+                "Edit",
+                "btn-primary-custom professional-button-link",
+                new { id = Model.Id_Usuario });
+
+            AgregarLink(
+                "Dar de baja",
+                "Delete",
+                "btn-google professional-danger-link",
+                new { id = Model.Id_Usuario });
+
+            AgregarVolver();
+            break;
+
+        case "Edit":
+            AgregarSubmit("Guardar cambios", "btn-primary-custom");
+            AgregarCancelar("Details", new { id = Model.Id_Usuario });
+            break;
+
+        case "Delete":
+            AgregarSubmit("Confirmar baja", "btn-primary-custom professional-delete-button");
+            AgregarCancelar("Details", new { id = Model.Id_Usuario });
+            break;
+
+        case "MiPerfil":
+            AgregarLink(
+                "Editar mi perfil",
+                "EditarMiPerfil",
+                "btn-primary-custom professional-button-link");
+
+            AgregarLink(
+                "Dar de baja mi perfil",
+                "BajaMiPerfil",
+                "btn-google professional-danger-link");
+
+            AgregarVolver();
+            break;
+
+        case "EditMiPerfil":
+            AgregarSubmit("Guardar cambios", "btn-primary-custom");
+            AgregarCancelar("MiPerfil");
+            break;
+
+        case "BajaMiPerfil":
+            AgregarSubmit("Confirmar baja de mi perfil", "btn-primary-custom professional-delete-button");
+            AgregarCancelar("MiPerfil");
+            break;
+    }
+
+    ViewData["Title"] = titulo;
+}
+
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/register.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/professional.css" asp-append-version="true" />
+
+<section class="auth-container professional-shell">
+    <div class="auth-card register-card professional-form-card">
+        <p class="auth-subtitle">@subtitulo</p>
+        <h2 class="auth-title">@titulo</h2>
+
+        @if (!string.IsNullOrWhiteSpace(textoAlertaBaja))
+        {
+            <div class="auth-error-alert professional-soft-alert">
+                @textoAlertaBaja
+            </div>
+        }
+
+        <form asp-controller="Profesional"
+              asp-action="@accionFormulario"
+              method="post"
+              enctype="multipart/form-data"
+              class="auth-form professional-form-layout"
+              id="profesionalForm">
+
+            @Html.AntiForgeryToken()
+
+            @if (!esCreate && Model.Id_Usuario != null)
+            {
+                <input type="hidden" asp-for="Id_Usuario" />
+            }
+
+            <input type="hidden" asp-for="UrlImagen" />
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="ModelOnly" class="auth-error-alert"></div>
+            }
+
+            <h3 class="professional-section-heading">Datos del usuario</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Nombre">Nombre</label>
+                    <input asp-for="Nombre"
+                           class="form-control"
+                           placeholder="Nombre del profesional"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Nombre" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Apellido">Apellido</label>
+                    <input asp-for="Apellido"
+                           class="form-control"
+                           placeholder="Apellido del profesional"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Apellido" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Email">Correo Electrónico</label>
+                    <input asp-for="Email"
+                           type="email"
+                           class="form-control"
+                           placeholder="ejemplo@correo.com"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Email" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Telefono">Teléfono</label>
+                    <input asp-for="Telefono"
+                           type="tel"
+                           class="form-control"
+                           placeholder="11 2345-6789"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Telefono" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            @if (mostrarPassword)
+            {
+                <div class="form-group">
+                    <label asp-for="Password">@(esCreate ? "Contraseña" : "Nueva Contraseña")</label>
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control"
+                           placeholder="@(esCreate ? "Mínimo 8 caracteres" : "Dejar vacío para no modificar")"
+                           required="@esCreate"
+                           minlength="8" />
+                    <span asp-validation-for="Password" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmarPassword">@(esCreate ? "Confirmar Contraseña" : "Confirmar Nueva Contraseña")</label>
+                    <input asp-for="ConfirmarPassword"
+                           type="password"
+                           class="form-control"
+                           placeholder="@(esCreate ? "Repetir contraseña" : "Repetir nueva contraseña")"
+                           required="@esCreate" />
+                    <span asp-validation-for="ConfirmarPassword" class="text-validation-error"></span>
+                </div>
+            }
+
+            <h3 class="professional-section-heading">Datos profesionales</h3>
+
+            <div class="form-group">
+                <label asp-for="ImagenArchivo">Imagen</label>
+
+                @if (!string.IsNullOrWhiteSpace(Model.UrlImagen))
+                {
+                    <div class="professional-current-image-box">
+                        <img src="@Model.UrlImagen"
+                             alt="Imagen del profesional"
+                             class="professional-current-image" />
+                    </div>
+                }
+
+                @if (!soloLectura)
+                {
+                    <input asp-for="ImagenArchivo"
+                           type="file"
+                           accept=".jpg,.jpeg,.png,.webp"
+                           class="form-control" />
+
+                    <small class="professional-help-text">
+                        Formatos permitidos: JPG, JPEG, PNG o WEBP. Tamaño máximo: 2 MB.
+                    </small>
+                }
+
+                <span asp-validation-for="ImagenArchivo" class="text-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Descripcion">Descripción</label>
+                <textarea asp-for="Descripcion"
+                          class="form-control professional-textarea-input"
+                          placeholder="Descripción profesional, experiencia o especialidad"
+                          disabled="@soloLectura"></textarea>
+                <span asp-validation-for="Descripcion" class="text-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Servicios que ofrece</label>
+
+                <div class="professional-services-panel">
+                    @if (Model.ServiciosDisponibles?.Any() == true)
+                    {
+                        foreach (var servicio in Model.ServiciosDisponibles)
+                        {
+                            bool idValido = int.TryParse(servicio.Value, out int servicioId);
+                            bool seleccionado = idValido &&
+                            (Model.IdsServiciosSeleccionados?.Contains(servicioId) ?? false);
+
+                            <label class="professional-service-chip">
+                                <input type="checkbox"
+                                       name="IdsServiciosSeleccionados"
+                                       value="@servicio.Value"
+                                       checked="@seleccionado"
+                                       disabled="@soloLectura" />
+                                <span>@servicio.Text</span>
+                            </label>
+                        }
+                    }
+                    else
+                    {
+                        <p class="professional-empty-copy">No hay servicios cargados.</p>
+                    }
+                </div>
+
+                <span asp-validation-for="IdsServiciosSeleccionados" class="text-validation-error"></span>
+                <span id="serviciosFrontError" class="text-validation-error"></span>
+            </div>
+
+            <div class="professional-actions">
+                @foreach (var accion in acciones)
+                {
+                    if (accion.Tipo == "submit")
+                    {
+                        <button type="submit" class="@accion.Clase">
+                            @accion.Texto
+                        </button>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action(accion.Action, accion.Controller, accion.RouteValues)"
+                           class="@accion.Clase">
+                            @accion.Texto
+                        </a>
+                    }
+                }
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    @if (validarServiciosFront)
+    {
+        <script>
+            const profesionalForm = document.getElementById("profesionalForm");
+
+            profesionalForm?.addEventListener("submit", function (event) {
+                const serviciosSeleccionados = document.querySelectorAll('input[name="IdsServiciosSeleccionados"]:checked');
+                const error = document.getElementById("serviciosFrontError");
+
+                if (serviciosSeleccionados.length === 0) {
+                    event.preventDefault();
+
+                    if (error) {
+                        error.textContent = "Debe seleccionar al menos un servicio.";
+                    }
+
+                    return;
+                }
+
+                if (error) {
+                    error.textContent = "";
+                }
+            });
+        </script>
+    }
+}

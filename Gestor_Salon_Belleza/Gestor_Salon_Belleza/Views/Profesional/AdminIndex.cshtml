@@ -1,0 +1,77 @@
+@model IEnumerable<Gestor_Salon_Belleza.ViewModels.ProfesionalListItemViewModel>
+
+@{
+    ViewData["Title"] = "Profesionales";
+}
+
+<section class="profesional-index-page">
+    <div class="professional-index-card">
+
+        <p class="professional-subtitle">GESTIÓN INTERNA</p>
+        <h1 class="professional-title">Profesionales</h1>
+
+        <p class="professional-intro">
+            Administra el equipo del salón, consulta sus datos principales y entra al detalle de cada perfil.
+        </p>
+
+        <div class="professional-toolbar">
+            <a asp-controller="Profesional"
+               asp-action="Create"
+               class="professional-add-button">
+                Agregar profesional
+            </a>
+        </div>
+
+        <div class="professional-table-wrapper">
+            <table class="professional-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Servicios</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var profesional in Model)
+                        {
+                            <tr>
+                                <td>@profesional.NombreCompleto</td>
+                                <td>@profesional.Email</td>
+                                <td>@profesional.Telefono</td>
+                                <td>@profesional.Servicios</td>
+                                <td>
+                                    <a asp-controller="Profesional"
+                                       asp-action="Details"
+                                       asp-route-id="@profesional.Id_Usuario"
+                                       class="professional-row-action">
+                                        Ver
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="professional-empty-row">
+                                No hay profesionales cargados.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="DashboardAdmin"
+           class="professional-back-link">
+            Volver al inicio
+        </a>
+
+    </div>
+</section>

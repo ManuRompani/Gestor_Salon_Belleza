@@ -31,10 +31,7 @@ namespace Gestor_Salon_Belleza.Controllers
         public IActionResult Login() {
             if (User.Identity != null && User.Identity.IsAuthenticated) 
             {
-
                 return RedirectToAction("Index", "Home");
-                
-                
             }
             else
             {
@@ -68,7 +65,7 @@ namespace Gestor_Salon_Belleza.Controllers
         }
        
         [HttpPost]
-        public async Task<IActionResult> LoginAuthenticate(LoginViewModel model)
+        public async Task<IActionResult> LoginAuthenticate(LoginViewModel model, string? returnUrl = null)
         {
             // Paso 1:
             // Validamos lo que llegó desde el formulario antes de consultar la base.
@@ -107,14 +104,17 @@ namespace Gestor_Salon_Belleza.Controllers
 
             // Paso 6:
             // Si las credenciales son válidas, firmamos la cookie local del sistema.
+
             await SignInLocalUserAsync(usuarioBuscado, model.Recordarme);
 
+            if (!string.IsNullOrWhiteSpace(model.ReturnUrl))
+                return LocalRedirect(model.ReturnUrl);
             return RedirectToAction(nameof(RedirectByRol));
         }
 
         // EXTERNAL LOGIN
         [HttpPost]
-        public IActionResult ExternalLogin(string provider, EnumRoles tipoUsuario)
+        public IActionResult ExternalLogin(string provider, EnumRoles tipoUsuario, string? returnUrl = null)
         {
             // Recibo el proveedor y el tipo de usuario desde el formulario.
 
@@ -147,6 +147,10 @@ namespace Gestor_Salon_Belleza.Controllers
 
             // Guardo el tipo de usuario para recuperarlo al volver de Google.
             properties.Items["tipoUsuario"] = tipoUsuario.ToString();
+
+            // Guardo la URL de retorno para redirigir después del login con Google.
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+                properties.Items["returnUrl"] = returnUrl;
 
             // Inicio el login externo con Google.
             return Challenge(properties, provider);
@@ -323,6 +327,14 @@ namespace Gestor_Salon_Belleza.Controllers
             // Inicio sesión con mi cookie local.
             await SignInLocalUserAsync(usuario);
 
+            // Recupero la URL de retorno guardada antes de ir a Google.
+            string? returnUrl = null;
+            if (externalAuth.Properties?.Items.TryGetValue("returnUrl", out var ru) == true)
+                returnUrl = ru;
+
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+                return LocalRedirect(returnUrl);
+
             // Redirijo según el rol.
             return RedirectToAction(nameof(RedirectByRol));
         }
@@ -481,7 +493,7 @@ namespace Gestor_Salon_Belleza.Controllers
                 Email = model.Email,
                 Telefono = model.Telefono,
                 Password = passwordHasheada,
-                Id_Rol = 2
+                Id_Rol = (int)EnumRoles.Cliente
             };
 
             _context.Add(nuevoUsuario);
