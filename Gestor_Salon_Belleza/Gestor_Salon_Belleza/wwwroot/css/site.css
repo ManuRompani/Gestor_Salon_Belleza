@@ -42,9 +42,7 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 24px 8.4%;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
-    position: sticky;
-    top: 0;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08); 
     z-index: 1000;
 }
 
@@ -604,6 +602,11 @@ header {
 }
 
 @media (max-width: 768px) {
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
     .especialistas-wrapper {
         padding: 40px 5% 60px;
     }
