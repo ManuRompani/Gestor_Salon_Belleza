@@ -19,9 +19,10 @@ namespace Gestor_Salon_Belleza.ViewModels
     public class ProfessionalItem
     {
         public int Id { get; set; }
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
         public string? ImageUrl { get; set; }
         public string? Description { get; set; }
+        public int DurationMinutes { get; set; }
     }
 
     public class TimeSlotItem

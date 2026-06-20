@@ -35,7 +35,7 @@
                         <a asp-action="Confirm"
                            asp-route-serviceId="@Model.ServiceId"
                            asp-route-professionalId="@Model.ProfessionalId"
-                           asp-route-dateTime="@slot.DateTime.ToString("yyyy-MM-ddTHH:mm:ss")"
+                           asp-route-dateTime='@slot.DateTime.ToString("yyyy-MM-ddTHH:mm:ss")'
                            class="slot-card slot-available">
                             @slot.Display
                         </a>

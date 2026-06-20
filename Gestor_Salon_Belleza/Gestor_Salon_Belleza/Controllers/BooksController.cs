@@ -85,6 +85,32 @@ namespace Gestor_Salon_Belleza.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SelectServiceForProfessional(int professionalId)
+        {
+            var professional = await _context.Profesionales
+                .Include(p => p.Usuario)
+                .Include(p => p.Profesional_Servicios).ThenInclude(ps => ps.Servicio)
+                .FirstOrDefaultAsync(p => p.Id_Usuario == professionalId && !p.Usuario.Eliminado);
+
+            if (professional == null) return RedirectToAction("Specialists", "Home");
+
+            var model = new BookAppointmentViewModel
+            {
+                ProfessionalId = professionalId,
+                ProfessionalName = professional.Usuario.Nombre + " " + professional.Usuario.Apellido,
+                Professionals = professional.Profesional_Servicios.Select(ps => new ProfessionalItem
+                {
+                    Id = ps.Servicio.Id_Servicio,
+                    FullName = ps.Servicio.Nombre,
+                    Description = ps.Servicio.Descripcion,
+                    DurationMinutes = ps.Servicio.Duracion_Minutos
+                }).ToList()
+            };
+
+            return View(model);
+        }
+
         [Authorize(Roles = "Cliente")]
         [HttpGet]
         public async Task<IActionResult> Confirm(int serviceId, int professionalId, DateTime dateTime)
@@ -146,7 +172,6 @@ namespace Gestor_Salon_Belleza.Controllers
 
                 await _context.SaveChangesAsync();
             
-            TempData["Exito"] = "Turno reservado correctamente.";
             return RedirectToAction(nameof(Success), new { id = turno.Id_Turno });
         }
 
