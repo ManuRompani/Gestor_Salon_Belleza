@@ -46,7 +46,7 @@ namespace Gestor_Salon_Belleza.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ServicesViewModel model)
+        public async Task<IActionResult> CreateService(ServicesViewModel model)
         {
 
             if (!ModelState.IsValid){ return View(model); }
@@ -72,7 +72,9 @@ namespace Gestor_Salon_Belleza.Controllers
             _context.Servicios.Add(nuevoServicio);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index)); 
+
+            TempData["Exito"] = "Servicio registrado exitosamente.";
+            return RedirectToAction("Create"); 
         }
 
         /*=== MODIFICACION ===*/
@@ -95,7 +97,7 @@ namespace Gestor_Salon_Belleza.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ServicesViewModel model)
+        public async Task<IActionResult> EditService(int id, ServicesViewModel model)
         {
             if (id != model.Id) return NotFound();
             if (!ModelState.IsValid) return View(model);
@@ -125,7 +127,7 @@ namespace Gestor_Salon_Belleza.Controllers
         /*=== BAJA LOGICA ===*/
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteService(int id)
         {
             var servicio = await _context.Servicios.FindAsync(id);
             if (servicio == null) return NotFound();

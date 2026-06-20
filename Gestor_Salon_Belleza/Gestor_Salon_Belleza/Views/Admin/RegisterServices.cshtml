@@ -11,7 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Servicio - Gestor de Belleza</title>
-    <link rel="stylesheet" href="style.css">
+    
 </head>
 <body>
 
@@ -22,7 +22,13 @@
                 <p>Ingresá los datos del tratamiento o servicio para agregarlo al catálogo.</p>
             </header>
 
-            <form action="" method="POST" class="beauty-form">
+            @if (TempData["Exito"] != null)
+            {
+                <div class="alert-exito">
+                    @TempData["Exito"]
+                </div>
+            }
+            <form asp-action="CreateService" asp-controller="Services" method="post" class="beauty-form">
 
                 <div class="form-group">
                     <label for="nombre">Nombre del Servicio</label>
