@@ -3,13 +3,36 @@
     flex-direction: column;
 }
 
+.admin-subtitle {
+    font-size: 12px;
+    letter-spacing: 6px;
+    color: #b58376;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+    padding: 15px 0 0 0;
+}
+
+.admin-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 42px;
+    line-height: 1.1;
+    color: #23263b;
+    margin: 0;
+}
+
+.admin-intro {
+    max-width: 520px;
+    margin: 0 auto 34px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #23263b;
+}
+
 .dash-header {
     text-align: center;
 }
 
-.dash-header h1 {
-   font-family: "Playfair Display", Georgia, serif;
-}
+
 
 
 
