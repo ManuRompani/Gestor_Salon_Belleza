@@ -31,6 +31,8 @@ section,
 footer,
 header {
     display: block;
+    position: relative;
+    flex-grow: 1;
 }
 
 /* ==========================================
@@ -41,7 +43,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 8.4%;
+    padding: 0 24px  0 8.4%;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08); 
     z-index: 1000;
 }
@@ -239,16 +241,20 @@ header {
    ========================================== */
 .footer {
     background-color: var(--white);
-    padding: 30px 8% 34px;
+    
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     text-align: center;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
 }
 
 .footer-content p {
-    font-size: 0.82rem;
+    font-size: 0.72rem;
     color: #a29791;
     margin: 5px 0;
-    line-height: 1.45;
 }
 
 /* ==========================================
