@@ -94,6 +94,11 @@ header {
 .btn-profile {
     border: 2px solid #353754;
     color: var(--dark-color) !important;
+    padding: 8px 16px; 
+    white-space: nowrap;
+    display: inline-block;
+    text-decoration: none; 
+    transition: all 0.2s ease-in-out;
 }
 
 .btn-profile:hover {
