@@ -1,0 +1,48 @@
+@using Gestor_Salon_Belleza.ViewModels
+@model BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Select Service - Glow & Style";
+}
+@section Books {
+    <link rel="stylesheet" href="~/css/books/select-professional.css" asp-append-version="true" />
+}
+
+<div class="turnos-wrapper">
+    <div class="turnos-hero">
+        <span class="subtitle">Step 1 of 3</span>
+        <h1>Choose a service with @Model.ProfessionalName</h1>
+        <p>Select which service you'd like to book</p>
+    </div>
+
+    <div class="especialistas-grid">
+        @if (Model.Professionals != null && Model.Professionals.Any())
+        {
+            foreach (var service in Model.Professionals)
+            {
+                <div class="especialista-card">
+                    <div class="especialista-info">
+                        <h2 class="especialista-nombre">@service.FullName</h2>
+                        @if (!string.IsNullOrEmpty(service.Description))
+                        {
+                            <p class="especialista-descripcion">@service.Description</p>
+                        }
+                        <p class="especialista-descripcion">Duration: @service.DurationMinutes min</p>
+                        <a asp-action="SelectSchedule"
+                           asp-route-serviceId="@service.Id"
+                           asp-route-professionalId="@Model.ProfessionalId"
+                           class="btn btn-primary btn-turno">
+                            Select
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="turnos-empty">
+                <p>This professional has no services available.</p>
+                <a asp-controller="Home" asp-action="Specialists" class="btn btn-secondary">Back to specialists</a>
+            </div>
+        }
+    </div>
+</div>

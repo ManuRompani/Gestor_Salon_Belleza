@@ -37,6 +37,11 @@ body {
     color: var(--primary-dark);
     margin-bottom: 40px;
     letter-spacing: -0.5px;
+    text-decoration: none;
+}
+
+.auth-logo:visited {
+    color: var(--primary-dark);
 }
 
 .auth-subtitle {
