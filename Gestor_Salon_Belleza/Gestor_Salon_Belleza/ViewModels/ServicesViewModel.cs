@@ -18,5 +18,6 @@ namespace Gestor_Salon_Belleza.ViewModels
         [Range(0.01, 999999.99, ErrorMessage = "El precio debe ser un valor positivo mayor a 0.")]
         public decimal Precio { get; set; }
 
+        public bool Activo { get; set; }
     }
 }

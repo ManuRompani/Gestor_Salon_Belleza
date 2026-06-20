@@ -21,17 +21,9 @@ namespace Gestor_Salon_Belleza.Controllers
             return View();
         }
 
-        public IActionResult EditServices() { 
-            return View();
-    }
+     
 
-        public IActionResult RegisterServices() {
-            return View();
-        }
-
-        public IActionResult DashboardServices() {
-            return View();
-        }
+           
 
     }
 }

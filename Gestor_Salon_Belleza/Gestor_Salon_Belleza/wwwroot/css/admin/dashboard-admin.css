@@ -1,6 +1,7 @@
 ﻿main.page-content {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 }
 
 .admin-subtitle {
@@ -8,7 +9,7 @@
     letter-spacing: 6px;
     color: #b58376;
     text-transform: uppercase;
-    margin: 0 0 14px;
+    margin: 0 0 0 14px;
     padding: 15px 0 0 0;
 }
 
@@ -78,7 +79,7 @@
 
     .dashboard-card p {
         color: #666;
-        font-size: 0.95rem;
+        font-size: 0.8rem;
         margin-bottom: 25px;
         line-height: 1.5;
     }
@@ -86,7 +87,7 @@
 @media (max-width: 768px) {
     .flex-dashboard {
         flex-direction: column !important; /* Los apila verticalmente */
-        padding: 0 20px !important; /* Reduce el espacio libre de los lados en celulares */
+        padding: 20px; /* Reduce el espacio libre de los lados en celulares */
         gap: 20px; /* Achica la separación entre tarjetas */
     }
 

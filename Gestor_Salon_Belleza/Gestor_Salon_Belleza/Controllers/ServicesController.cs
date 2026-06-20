@@ -1,11 +1,13 @@
 ﻿using Gestor_Salon_Belleza.Data;
 using Gestor_Salon_Belleza.Models;
 using Gestor_Salon_Belleza.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gestor_Salon_Belleza.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class ServicesController : Controller
     {
 
@@ -21,7 +23,18 @@ namespace Gestor_Salon_Belleza.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+
+        //=========================VIEWS======================================================================
+        public IActionResult RegisterServices()
+            {
+                return View();
+            }
+
+        public IActionResult EditServices()
+        {
+            return View();
+        }
+        public async Task<IActionResult> IndexServices()
         {
             var services = await _context.Servicios
                 .Where(s => s.Activo) // Solo mostrar servicios activos
@@ -31,15 +44,19 @@ namespace Gestor_Salon_Belleza.Controllers
                     Nombre = s.Nombre,
                     Descripcion = s.Descripcion,
                     Duracion = s.Duracion_Minutos,
-                    Precio = s.Precio
+                    Precio = s.Precio,
+                    Activo = s.Activo
                 }).ToListAsync();
-                
+
             return View(services);
         }
+        //====================================================================================================
+
+
 
 
         /*=== ALTA ===*/
-        public IActionResult Create()
+       public IActionResult Create()
         {
             return View();
         }
@@ -49,11 +66,11 @@ namespace Gestor_Salon_Belleza.Controllers
         public async Task<IActionResult> CreateService(ServicesViewModel model)
         {
 
-            if (!ModelState.IsValid){ return View(model); }
+            if (!ModelState.IsValid) { return View(model); }
 
-            
+
             bool existe = await _context.Servicios.AnyAsync(s => s.Nombre.ToLower() == model.Nombre.ToLower() && s.Activo);
-            
+
             if (existe)
             {
                 ModelState.AddModelError("Nombre", "Ya existe un servicio activo con ese nombre.");
@@ -74,7 +91,7 @@ namespace Gestor_Salon_Belleza.Controllers
 
 
             TempData["Exito"] = "Servicio registrado exitosamente.";
-            return RedirectToAction("Create"); 
+            return RedirectToAction("RegisterServices");
         }
 
         /*=== MODIFICACION ===*/
