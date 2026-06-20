@@ -432,3 +432,8 @@ FodyWeavers.xsd
 # Local configuration files with secrets
 **/appsettings.json
 **/appsettings.Development.json
+appsettings.json
+
+# Secretos de usuario de Visual Studio
+.microsoft/usersecrets/
+secrets.json

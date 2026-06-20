@@ -1,0 +1,75 @@
+﻿main.page-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.dash-header {
+    text-align: center;
+}
+
+.dash-header h1 {
+   font-family: "Playfair Display", Georgia, serif;
+}
+
+
+
+.flex-dashboard {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* Prohíbe terminantemente que bajen */
+    flex-grow: 1;
+    align-items: anchor-center;
+    gap: 30px; /* Separación entre las dos cajas */
+    width: 100%;    
+
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+.dashboard-card {
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;     
+    
+    background-color: var(--white);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 30px;
+    height: 100%;
+    flex: 1 1 0% !important;
+    min-width: 0; 
+    
+}
+
+
+    .dashboard-card h2 {
+        color: var(--dark-color);
+        margin-bottom: 15px;
+        font-weight: 600;
+        font-family: "Playfair Display", Georgia, serif;
+    }
+
+    .dashboard-card p {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+        line-height: 1.5;
+    }
+
+@media (max-width: 768px) {
+    .flex-dashboard {
+        flex-direction: column !important; /* Los apila verticalmente */
+        padding: 0 20px !important; /* Reduce el espacio libre de los lados en celulares */
+        gap: 20px; /* Achica la separación entre tarjetas */
+    }
+
+    .dashboard-card {
+        flex: 1 1 auto !important; /* Permite que crezcan según su contenido */
+        width: 100% !important; /* Ocupan todo el ancho disponible del celular */
+        padding: 24px; /* Menos espacio interno para pantallas chicas */
+    }
+}
