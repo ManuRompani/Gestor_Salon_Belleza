@@ -58,6 +58,11 @@
     .confirm-card { padding: 28px 20px; margin: 0 5%; }
     .confirm-row { flex-direction: column; align-items: flex-start; gap: 4px; }
     .confirm-value { text-align: left; }
-    .confirm-actions { flex-direction: column; }
-    .confirm-actions .btn { width: 100%; text-align: center; }
+    .confirm-actions { flex-direction: column; align-items: stretch; }
+    .confirm-actions .btn,
+    .confirm-actions .cancel-link {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
 }
