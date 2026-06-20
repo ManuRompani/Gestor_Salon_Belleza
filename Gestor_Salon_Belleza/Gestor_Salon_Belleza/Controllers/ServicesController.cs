@@ -19,16 +19,10 @@ namespace Gestor_Salon_Belleza.Controllers
         }
 
 
-        //=========================VIEWS======================================================================
-        public IActionResult RegisterServices()
-            {
-                return View();
-            }
-
-        public IActionResult EditServices()
-        {
-            return View();
-        }
+        //Para mostrar un registro vacio
+       
+        
+        //Muestra todos servicios
         public async Task<IActionResult> IndexServices()
         {
             var services = await _context.Servicios                
@@ -44,20 +38,22 @@ namespace Gestor_Salon_Belleza.Controllers
 
             return View(services);
         }
-        //====================================================================================================
 
 
 
 
-        /*=== ALTA ===*/
-       public IActionResult Create()
+
+        /*===================*/
+        /*     CREATE        */
+        /*===================*/
+        public IActionResult CreateServices()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateService(ServicesViewModel model)
+        public async Task<IActionResult> CreateServices(ServicesViewModel model)
         {
 
             if (!ModelState.IsValid) { return View(model); }
@@ -85,12 +81,12 @@ namespace Gestor_Salon_Belleza.Controllers
 
 
             TempData["Exito"] = "Servicio registrado exitosamente.";
-            return RedirectToAction("RegisterServices");
+            return RedirectToAction("CreateServices");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ActivateService(int id)
+        public async Task<IActionResult> ActivateServices(int id)
         {
             var servicio = await _context.Servicios.FindAsync(id);
             if (servicio == null) return NotFound();
@@ -99,27 +95,23 @@ namespace Gestor_Salon_Belleza.Controllers
             return RedirectToAction("IndexServices");
         }
 
-        /*=== MODIFICACION ===*/
-        public async Task<IActionResult> Edit(int id)
+
+
+        /*===================*/
+        /*       EDIT        */
+        /*===================*/
+        public async Task<IActionResult> EditServices(int id)
         {
             var servicio = await _context.Servicios.FirstOrDefaultAsync(s => s.Id_Servicio == id && s.Activo);
             if (servicio == null) return NotFound();
 
-            var model = new ServicesViewModel
-            {
-                Id = servicio.Id_Servicio,
-                Nombre = servicio.Nombre,
-                Descripcion = servicio.Descripcion,
-                Duracion = servicio.Duracion_Minutos,
-                Precio = servicio.Precio
-            };
-
-            return View(model); // Llama a Edit.cshtml pasándole los datos actuales
+           
+            return View(servicio); 
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditService(int id, ServicesViewModel model)
+        public async Task<IActionResult> EditServices(int id, ServicesViewModel model)
         {
             if (id != model.Id) return NotFound();
             if (!ModelState.IsValid) return View(model);
@@ -146,10 +138,15 @@ namespace Gestor_Salon_Belleza.Controllers
         }
 
 
-        /*=== BAJA LOGICA ===*/
+
+
+        /*===================*/
+        /*      DELETE       */
+        /*===================*/
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteService(int id)
+        public async Task<IActionResult> DeleteServices(int id)
         {
             var servicio = await _context.Servicios.FindAsync(id);
             if (servicio == null) return NotFound();

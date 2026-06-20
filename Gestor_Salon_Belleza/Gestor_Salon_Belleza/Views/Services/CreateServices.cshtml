@@ -20,7 +20,7 @@
                     @TempData["Exito"]
                 </div>
             }
-            <form asp-action="CreateService" asp-controller="Services" method="post" class="beauty-form">
+            <form asp-action="CreateServices" asp-controller="Services" method="post" class="beauty-form">
 
                 <div class="form-group">
                     <label for="nombre">Nombre del Servicio</label>
@@ -53,10 +53,10 @@
             </form>
         </section>
 
-        <a asp-controller="Admin"
-           asp-action="DashboardAdmin"
+        <a asp-controller="Services"
+           asp-action="IndexServices"
            class="services-back-link">
-            Volver al inicio
+            Volver a servicios
         </a>
         
 
