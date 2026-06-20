@@ -4,22 +4,14 @@
     ViewData["Title"] = "Glow & Style | ADMIN: Registrar Servicios";
 }
 
+@section RegisterServices {
+<link rel="stylesheet" href="~/css/Services/services-register.css">
+}
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Servicio - Gestor de Belleza</title>
-    
-</head>
-<body>
-
-    <main class="container">
         <section class="form-card">
             <header class="form-header">
-                <h2>Registrar Nuevo Servicio</h2>
-                <p>Ingresá los datos del tratamiento o servicio para agregarlo al catálogo.</p>
+                <p>ALTA DE SERVICIO</p>
+                <h2>Nuevo Servicio</h2>
             </header>
 
             @if (TempData["Exito"] != null)
@@ -52,14 +44,20 @@
                     <textarea id="descripcion" name="Descripcion" rows="4" placeholder="Detalle del servicio, productos utilizados, etc..."></textarea>
                 </div>
 
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary">Cancelar</button>
+                <div class="form-actions">                    
                     <button type="submit" class="btn btn-primary">Guardar Servicio</button>
                 </div>
 
+
+
             </form>
         </section>
-    </main>
 
-</body>
-</html>
+        <a asp-controller="Admin"
+           asp-action="DashboardAdmin"
+           class="services-back-link">
+            Volver al inicio
+        </a>
+        
+
+

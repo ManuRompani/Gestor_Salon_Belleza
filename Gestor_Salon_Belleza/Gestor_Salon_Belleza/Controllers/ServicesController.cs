@@ -10,12 +10,7 @@ namespace Gestor_Salon_Belleza.Controllers
     [Authorize(Roles = "Administrador")]
     public class ServicesController : Controller
     {
-
-        /* -alta -->> LISTO
-         * -modificacion
-         * -baja logica
-         * -listado
-         */
+     
         private readonly AppDBContext _context;
 
         public ServicesController(AppDBContext context)
@@ -36,8 +31,7 @@ namespace Gestor_Salon_Belleza.Controllers
         }
         public async Task<IActionResult> IndexServices()
         {
-            var services = await _context.Servicios
-                .Where(s => s.Activo) // Solo mostrar servicios activos
+            var services = await _context.Servicios                
                 .Select(s => new ViewModels.ServicesViewModel
                 {
                     Id = s.Id_Servicio,
@@ -92,6 +86,17 @@ namespace Gestor_Salon_Belleza.Controllers
 
             TempData["Exito"] = "Servicio registrado exitosamente.";
             return RedirectToAction("RegisterServices");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ActivateService(int id)
+        {
+            var servicio = await _context.Servicios.FindAsync(id);
+            if (servicio == null) return NotFound();
+            servicio.Activo = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("IndexServices");
         }
 
         /*=== MODIFICACION ===*/
@@ -152,7 +157,7 @@ namespace Gestor_Salon_Belleza.Controllers
             servicio.Activo = false; // Desactivación en lugar de borrado físico
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("IndexServices");
         }
 
 

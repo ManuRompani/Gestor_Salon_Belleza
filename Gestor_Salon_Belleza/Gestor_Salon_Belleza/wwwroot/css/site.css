@@ -43,7 +43,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 24px  0 8.4%;
+    padding: 10px 24px  10px 8.4%;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08); 
     z-index: 1000;
 }
@@ -91,32 +91,38 @@ header {
     background-color: #a2717a;
 }
 
+
+/*========================================
+    BTN PROFILE - LOGOUT
+==========================================*/
+
+.btn-logout,
 .btn-profile {
-    border: 2px solid #353754;
-    color: var(--dark-color) !important;
-    padding: 8px 16px; 
+    /* --- Geometría idéntica para ambos --- */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 130px;
+    height: 40px; 
+    border-radius: 20px;
+    padding: 0 16px;
+    box-sizing: border-box;
+   
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
     white-space: nowrap;
-    display: inline-block;
-    text-decoration: none; 
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-profile:hover {
-    background-color: var(--dark-color);
-    color: var(--white) !important;
-}
-
-/* Boton de logout */
-.btn-logout {
-    background-color: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
-    border: 1px solid #dc3545;
-    padding: 8px 16px;
-    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 }
 
+.btn-logout {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
 
     .btn-logout:hover {
         background-color: #dc3545;
@@ -124,6 +130,16 @@ header {
         box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
     }
 
+.btn-profile {
+    background-color: transparent;
+    border: 1px solid #353754;
+    color: #353754 !important;
+}
+
+    .btn-profile:hover {
+        background-color: #353754;
+        color: #ffffff !important;
+    }
 
 .menu-checkbox {
     display: none;
