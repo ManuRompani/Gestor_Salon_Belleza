@@ -98,7 +98,7 @@ header {
 
 .btn-logout,
 .btn-profile {
-    /* --- Geometría idéntica para ambos --- */
+    /* --- Geometrï¿½a idï¿½ntica para ambos --- */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -227,6 +227,7 @@ header {
     font-size: 0.94rem;
     font-weight: 600;
     text-decoration: none;
+    text-align: center;
     border-radius: 50px;
     transition: var(--transition);
 }
@@ -348,7 +349,7 @@ header {
 }
 
 /* ==========================================
-   PÁGINA DE SERVICIOS
+   Pï¿½GINA DE SERVICIOS
    ========================================== */
 .servicios-wrapper {
     flex: 1;
@@ -477,7 +478,7 @@ header {
 }
 
 /* ==========================================
-   PÁGINA DE ESPECIALISTAS
+   Pï¿½GINA DE ESPECIALISTAS
    ========================================== */
 .especialistas-wrapper {
     flex: 1;

@@ -30,7 +30,8 @@ body {
     text-align: center;
 }
 
-.auth-logo {
+.auth-logo,
+.auth-logo:visited {
     font-family: 'Playfair Display', serif;
     font-size: 28px;
     font-weight: 700;
@@ -40,8 +41,16 @@ body {
     text-decoration: none;
 }
 
-.auth-logo:visited {
+.auth-logo a,
+.auth-logo a:visited {
     color: var(--primary-dark);
+    text-decoration: none;
+}
+
+a,
+a:visited {
+    color: var(--primary-dark);
+    text-decoration: none;
 }
 
 .auth-subtitle {
@@ -178,13 +187,13 @@ body {
     color: var(--text-muted);
 }
 
-    .auth-switch a {
+.auth-switch a{
         color: var(--primary-dark);
         font-weight: 600;
         text-decoration: none;
         border-bottom: 1px solid var(--primary-dark);
         padding-bottom: 2px;
-    }
+}
 
 .auth-error-alert {
     background-color: rgba(234, 67, 53, 0.06); /* Un rojo/rosa premium muy sutil */

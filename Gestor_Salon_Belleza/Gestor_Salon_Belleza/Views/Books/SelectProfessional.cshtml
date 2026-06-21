@@ -1,7 +1,7 @@
 @using Gestor_Salon_Belleza.ViewModels
 @model BookAppointmentViewModel
 @{
-    ViewData["Title"] = "Select Professional - Glow & Style";
+    ViewData["Title"] = "Seleccionar Profesional  - Glow & Style";
 }
 @section Books {
     <link rel="stylesheet" href="~/css/books/select-professional.css" asp-append-version="true" />
@@ -9,9 +9,9 @@
 
 <div class="turnos-wrapper">
     <div class="turnos-hero">
-        <span class="subtitle">Step 1 of 3</span>
-        <h1>Choose your professional</h1>
-        <p>Service: <strong>@Model.ServiceName</strong> (approx. @Model.DurationMinutes min)</p>
+        <span class="subtitle">Paso 1 de 3</span>
+        <h1>Eligí tu profesional</h1>
+        <p>Servicio: <strong>@Model.ServiceName</strong> (aprox. @Model.DurationMinutes min)</p>
     </div>
 
     <div class="especialistas-grid">
@@ -41,7 +41,7 @@
                            asp-route-serviceId="@Model.ServiceId"
                            asp-route-professionalId="@prof.Id"
                            class="btn btn-primary btn-turno">
-                            Select
+                            Seleccionar
                         </a>
                     </div>
                 </div>
@@ -50,13 +50,13 @@
         else
         {
             <div class="turnos-empty">
-                <p>No professionals available for this service.</p>
-                <a asp-controller="Home" asp-action="Services" class="btn btn-secondary">Back to services</a>
+                <p>No hay profesionales disponibles para este servicio.</p>
+                <a asp-controller="Home" asp-action="Services" class="btn btn-secondary">Volver a servicios</a>
             </div>
         }
     </div>
 
     <div class="cancel-row">
-        <a asp-controller="Home" asp-action="Index" class="cancel-link">Cancel</a>
+        <a asp-controller="Home" asp-action="Index" class="cancel-link">Cancelar</a>
     </div>
 </div>

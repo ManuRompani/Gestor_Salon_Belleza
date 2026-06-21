@@ -42,6 +42,7 @@
         padding: 0;
     }
 
+
 /* Ajuste responsivo: si la pantalla es chica, los campos se apilan uno abajo del otro */
 @media (max-width: 480px) {
     .form-row {

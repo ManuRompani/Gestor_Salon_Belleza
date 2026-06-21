@@ -1,6 +1,6 @@
 @model Turno
 @{
-    ViewData["Title"] = "Appointment Confirmed - Glow & Style";
+    ViewData["Title"] = "Confirmación de reserva - Glow & Style";
 }
 @section Books {
     <link rel="stylesheet" href="~/css/books/books-success.css" asp-append-version="true" />
@@ -15,37 +15,37 @@
                 <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
         </div>
-        <h1>Appointment confirmed!</h1>
-        <p class="success-subtitle">Your appointment has been booked successfully.</p>
+        <h1>Reserva confirmada!</h1>
+        <p class="success-subtitle">Tu reserva se realizó correctamente.</p>
 
         <div class="confirm-card">
             <div class="confirm-details">
                 <div class="confirm-row">
-                    <span class="confirm-label">Service</span>
+                    <span class="confirm-label">Servicio</span>
                     <span class="confirm-value">@Model.TurnoServicios?.FirstOrDefault()?.Servicio?.Nombre</span>
                 </div>
                 <div class="confirm-row">
-                    <span class="confirm-label">Professional</span>
+                    <span class="confirm-label">Profesional</span>
                     <span class="confirm-value">@Model.Profesional?.Usuario?.Nombre @Model.Profesional?.Usuario?.Apellido</span>
                 </div>
                 <div class="confirm-row">
-                    <span class="confirm-label">Date</span>
+                    <span class="confirm-label">Fecha</span>
                     <span class="confirm-value">@Model.FechaHora.ToString("dddd, MMMM dd, yyyy")</span>
                 </div>
                 <div class="confirm-row">
-                    <span class="confirm-label">Time</span>
+                    <span class="confirm-label">Hora</span>
                     <span class="confirm-value">@Model.FechaHora.ToString("HH:mm")</span>
                 </div>
                 <div class="confirm-row">
-                    <span class="confirm-label">Code</span>
+                    <span class="confirm-label">Código</span>
                     <span class="confirm-value">#@Model.Id_Turno</span>
                 </div>
             </div>
         </div>
 
         <div class="success-actions">
-            <a asp-action="MyAppointments" class="btn btn-primary">My appointments</a>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to home</a>
+            <a asp-action="MyAppointments" class="btn btn-primary">Mis turnos</a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Volver al inicio</a>
         </div>
     </div>
 </div>
