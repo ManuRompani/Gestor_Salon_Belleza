@@ -77,6 +77,20 @@
     text-decoration: line-through;
 }
 
+.schedule-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.schedule-actions .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
 @media (max-width: 768px) {
     .slots-grid { grid-template-columns: repeat(2, 1fr); }
     .date-picker-form input[type="date"] { width: 100%; min-width: auto; }

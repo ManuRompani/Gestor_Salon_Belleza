@@ -14,6 +14,12 @@
         <p>Professional: <strong>@Model.ProfessionalName</strong> — Service: <strong>@Model.ServiceName</strong> (@Model.DurationMinutes min)</p>
     </div>
 
+    <div class="schedule-actions">
+        <a asp-action="SelectProfessional" asp-route-serviceId="@Model.ServiceId" class="btn btn-secondary">← Change professional</a>
+        <a asp-controller="Home" asp-action="Services" class="btn btn-secondary">← Change service</a>
+        <a asp-controller="Home" asp-action="Index" class="cancel-link">Cancel</a>
+    </div>
+
     <div class="schedule-selector">
         <form method="get" asp-action="SelectSchedule" class="date-picker-form">
             <input type="hidden" name="serviceId" value="@Model.ServiceId" />
