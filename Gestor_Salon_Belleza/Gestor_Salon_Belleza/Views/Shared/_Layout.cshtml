@@ -18,6 +18,7 @@
     @RenderSection("DashboardAdmin", required: false)
     @RenderSection("Books", required: false)
     @RenderSection("IndexServices", required: false)
+    @RenderSection("RegisterServices", required: false)
 
     <style>
         .turnos-wrapper {
@@ -126,9 +127,9 @@
                     {
                         <a asp-controller="Account" asp-action="Profile" class="btn-nav btn-profile">Mi Perfil</a>
                     }
-                    else if (User.Identity != null && User.Identity.IsAuthenticated)
+                    else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
                     {
-                        <a asp-controller="Account" asp-action="RedirectByRol" class="btn-nav btn-profile">Mi Perfil</a>
+                        <a asp-controller="Account" asp-action="RedirectByRol" class="btn-nav btn-profile">Panel General</a>
                     }
                     else
                     {

@@ -1,4 +1,10 @@
-﻿.services-wrap {
+﻿/*
+    LO UTILIZA:
+    - IndexServices.cshtml
+*/
+
+
+.services-wrap {
     flex: 1;
     max-width: 1100px;
     margin: 0 auto;
@@ -6,7 +12,6 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-/* Encabezado */
 .services-header {
     display: flex;
     justify-content: space-between;
@@ -40,7 +45,7 @@
     text-decoration: none;
 }
 
-/* Alerta éxito */
+
 .alert-exito {
     background-color: #fbeaf0;
     border: 1px solid #b5838d;
@@ -52,7 +57,7 @@
     margin-bottom: 24px;
 }
 
-/* Botón agregar desktop */
+
 .btn-agregar {
     background-color: #2f314d;
     color: #ffffff;
@@ -70,9 +75,9 @@
         color: #ffffff;
     }
 
-/* ==========================================
-   TABLA DESKTOP
-   ========================================== */
+/*===============================================*/
+/*               TABLE DE SERVICIOS              */
+/*===============================================*/
 .table-wrap {
     background-color: #ffffff;
     border-radius: 18px;
@@ -110,7 +115,7 @@
         }
 
     .services-table tbody td {
-        padding: 14px 18px;
+        padding: 14px 14px;
         color: #2f314d;
         vertical-align: middle;
     }
@@ -135,13 +140,28 @@
     align-items: center;
 }
 
-/* Badges */
+
+
+/*===============================================*/
+/*          BADGES : INACTIVO /ACTIVO            */
+/*===============================================*/
 .badge {
-    padding: 4px 12px;
+   
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 85px; 
+    padding: 4px 12px; 
     border-radius: 50px;
+    box-sizing: border-box;
+   
+    font-family: "Montserrat", Arial, sans-serif;
     font-size: 0.75rem;
     font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
 }
+
 
 .badge-activo {
     background-color: #eaf4e0;
@@ -153,37 +173,76 @@
     color: #993333;
 }
 
-/* Botones de acción */
+
+/*===============================================*/
+/*   BUTTONS ACTIONS: ABM - ACTIVE/INACTIVE      */
+/*===============================================*/
 .btn-accion {
-    padding: 6px 16px;
+   
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px; 
+    height: 34px;
+    padding: 0 16px;
+    box-sizing: border-box; 
+    
     border-radius: 50px;
+    font-family: "Montserrat", Arial, sans-serif;
     font-size: 0.8rem;
     font-weight: 600;
     text-decoration: none;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    white-space: nowrap;
+    transition: all 0.2s ease-in-out;
 }
+
+    .btn-accion:hover {
+        transform: translateY(-1px);
+    }
+
 
 .btn-editar {
     background-color: #f0f0f3;
     color: #2f314d;
+    border: 1px solid rgba(47, 49, 77, 0.15);
 }
 
     .btn-editar:hover {
         background-color: #2f314d;
         color: #ffffff;
+        border-color: #2f314d;
     }
+
 
 .btn-baja {
     background-color: #fbeaf0;
     color: #993556;
+    border: 1px solid rgba(153, 53, 86, 0.15);
 }
 
     .btn-baja:hover {
         background-color: #993556;
         color: #ffffff;
+        border-color: #993556;
     }
+
+
+.btn-alta,
+.btn-activar {
+    background-color: #eaf4e0;
+    color: #4a7c20;
+    border: 1px solid rgba(74, 124, 32, 0.15);
+}
+
+    .btn-alta:hover,
+    .btn-activar:hover {
+        background-color: #4a7c20;
+        color: #ffffff;
+        border-color: #4a7c20;
+    }
+
 
 /* ==========================================
    CARDS MOBILE
@@ -240,7 +299,6 @@
     margin-top: 4px;
 }
 
-/* Botón flotante mobile */
 .btn-flotante {
     position: fixed;
     bottom: 28px;
@@ -265,6 +323,7 @@
         color: #ffffff;
     }
 
+
 /* ==========================================
    RESPONSIVE — mostrar/ocultar
    ========================================== */
@@ -276,7 +335,7 @@
     display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1080px) {
     .services-wrap {
         padding: 40px 5% 80px;
     }

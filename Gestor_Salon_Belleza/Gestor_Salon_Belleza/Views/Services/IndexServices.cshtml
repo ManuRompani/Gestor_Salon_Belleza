@@ -14,7 +14,7 @@
             <h1>Servicios</h1>
             <p class="services-sub">Catálogo y tarifas · Atelier de Belleza</p>
         </div>
-        <a asp-controller="Services" asp-action="RegisterServices" class="btn-agregar desktop-only">
+        <a asp-controller="Services" asp-action="CreateServices" class="btn-agregar desktop-only">
             + Agregar servicio
         </a>
     </div>
@@ -50,11 +50,19 @@
                             </span>
                         </td>
                         <td class="td-acciones">
-                            <a asp-controller="Services" asp-action="EditService" asp-route-id="@s.Id" class="btn-accion btn-editar">Editar</a>
-                            <form asp-controller="Services" asp-action="DeleteService" asp-route-id="@s.Id" method="post" style="display:inline">
+
+                            @if(s.Activo){
+                            <a asp-controller="Services" asp-action="EditServices" asp-route-id="@s.Id" class="btn-accion btn-editar">Editar</a>
+                            <form asp-controller="Services" asp-action="DeleteServices" asp-route-id="@s.Id" method="post" style="display:inline">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn-accion btn-baja" onclick="return confirm('¿Dar de baja este servicio?')">Baja</button>
                             </form>
+                            }else{
+                            <form asp-controller="Services" asp-action="ActivateServices" asp-route-id="@s.Id" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-accion btn-alta" onclick="return confirm('¿Dar de alta este servicio?')">Alta</button>
+                            </form>
+                            }
                         </td>
                     </tr>
                 }
@@ -82,11 +90,21 @@
                     <span>$@s.Precio.ToString("N2")</span>
                 </div>
                 <div class="service-card-acciones">
-                    <a asp-controller="Services" asp-action="EditService" asp-route-id="@s.Id" class="btn-accion btn-editar">Editar</a>
-                    <form asp-controller="Services" asp-action="DeleteService" asp-route-id="@s.Id" method="post" style="display:inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn-accion btn-baja" onclick="return confirm('¿Dar de baja este servicio?')">Baja</button>
-                    </form>
+                    @if (s.Activo)
+                    {
+                        <a asp-controller="Services" asp-action="EditServices" asp-route-id="@s.Id" class="btn-accion btn-editar">Editar</a>
+                        <form asp-controller="Services" asp-action="DeleteServices" asp-route-id="@s.Id" method="post" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-accion btn-baja" onclick="return confirm('¿Dar de baja este servicio?')">Baja</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Services" asp-action="ActivateServices" asp-route-id="@s.Id" method="post" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-accion btn-alta" onclick="return confirm('¿Dar de alta este servicio?')">Alta</button>
+                        </form>
+                    }
                 </div>
             </div>
         }
@@ -99,6 +117,6 @@
         Volver al inicio
     </a>
     <!-- Botón flotante mobile -->
-    <a asp-controller="Services" asp-action="RegisterServices" class="btn-flotante mobile-only" title="Agregar servicio">+</a>
+    <a asp-controller="Services" asp-action="CreateServices" class="btn-flotante mobile-only" title="Agregar servicio">+</a>
 </div>
 
