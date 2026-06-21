@@ -11,7 +11,10 @@
 
             <div class="cta-container">
                 <a asp-controller="Home" asp-action="Services" class="btn btn-primary">Reservar Cita</a>
-                <a asp-controller="Account" asp-action="Register" class="btn btn-secondary">Registrarse</a>
+                @if (!(User.Identity != null && User.Identity.IsAuthenticated))
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-secondary">Registrarse</a>
+                }
             </div>
         </div>
     </section>
