@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Gestor_Salon_Belleza.Controllers
 {
@@ -219,7 +220,7 @@ namespace Gestor_Salon_Belleza.Controllers
         [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> MiPerfil()
         {
-            int? idUsuario = ObtenerIdUsuarioLogueado();
+            int? idUsuario = await ObtenerIdUsuarioLogueado();
 
             if (idUsuario == null)
             {
@@ -233,7 +234,7 @@ namespace Gestor_Salon_Belleza.Controllers
         [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> EditarMiPerfil()
         {
-            int? idUsuario = ObtenerIdUsuarioLogueado();
+            int? idUsuario = await ObtenerIdUsuarioLogueado();
 
             if (idUsuario == null)
             {
@@ -248,7 +249,7 @@ namespace Gestor_Salon_Belleza.Controllers
         [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> EditarMiPerfil(ProfesionalViewModel model)
         {
-            int? idUsuario = ObtenerIdUsuarioLogueado();
+            int? idUsuario = await ObtenerIdUsuarioLogueado();
 
             if (idUsuario == null)
             {
@@ -278,7 +279,7 @@ namespace Gestor_Salon_Belleza.Controllers
         [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> BajaMiPerfil()
         {
-            int? idUsuario = ObtenerIdUsuarioLogueado();
+            int? idUsuario = await ObtenerIdUsuarioLogueado();
 
             if (idUsuario == null)
             {
@@ -293,7 +294,7 @@ namespace Gestor_Salon_Belleza.Controllers
         [Authorize(Roles = "Profesional")]
         public async Task<IActionResult> BajaMiPerfil(ProfesionalViewModel model)
         {
-            int? idUsuario = ObtenerIdUsuarioLogueado();
+            int? idUsuario = await ObtenerIdUsuarioLogueado();
 
             if (idUsuario == null)
             {
@@ -321,6 +322,177 @@ namespace Gestor_Salon_Belleza.Controllers
             return View(VistaForm, model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> MisTurnos(string? estado, DateTime? fechaDesde, DateTime? fechaHasta)
+        {
+            var idUsuario = await ObtenerIdUsuarioLogueado();
+            if (idUsuario == null) return RedirectToAction("Login", "Account");
+
+            var query = _context.Turnos
+                .Include(t => t.Cliente).ThenInclude(c => c.Usuario)
+                .Include(t => t.TurnoServicios).ThenInclude(ts => ts.Servicio)
+                .Where(t => t.Id_Profesional == idUsuario.Value)
+                .AsQueryable();
+
+            if (estado == "activos")
+                query = query.Where(t => !t.Estado);
+            else if (estado == "cancelados")
+                query = query.Where(t => t.Estado);
+
+            if (fechaDesde.HasValue)
+                query = query.Where(t => t.FechaHora >= fechaDesde.Value);
+            if (fechaHasta.HasValue)
+                query = query.Where(t => t.FechaHora <= fechaHasta.Value.AddDays(1));
+
+            var turnos = await query
+                .OrderBy(t => t.FechaHora)
+                .Select(t => new ProfesionalTurnoViewModel
+                {
+                    Id_Turno = t.Id_Turno,
+                    ClienteNombre = t.Cliente.Usuario.Nombre + " " + t.Cliente.Usuario.Apellido,
+                    ServicioNombre = t.TurnoServicios.Any() ? t.TurnoServicios.First().Servicio.Nombre : "Sin servicio",
+                    FechaHora = t.FechaHora,
+                    Estado = t.Estado ? "Cancelado" : "Activo",
+                    FechaCancelacion = t.FechaCancelacion,
+                    DuracionMinutos = t.TurnoServicios.Any() ? t.TurnoServicios.First().Servicio.Duracion_Minutos : 0,
+                    Precio = t.TurnoServicios.Any() ? t.TurnoServicios.First().Servicio.Precio : 0
+                })
+                .ToListAsync();
+
+            ViewBag.EstadoFiltro = estado;
+            ViewBag.FechaDesde = fechaDesde?.ToString("yyyy-MM-dd");
+            ViewBag.FechaHasta = fechaHasta?.ToString("yyyy-MM-dd");
+
+            return View(turnos);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Profesional")]
+        public async Task<IActionResult> CancelarTurno(int id)
+        {
+            var idUsuario = await ObtenerIdUsuarioLogueado();
+            if (idUsuario == null) return RedirectToAction("Login", "Account");
+
+            var turno = await _context.Turnos.FindAsync(id);
+            if (turno == null || turno.Id_Profesional != idUsuario.Value)
+                return RedirectToAction(nameof(MisTurnos));
+
+            turno.Estado = true;
+            turno.FechaCancelacion = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            TempData["Exito"] = "Turno cancelado correctamente.";
+            return RedirectToAction(nameof(MisTurnos));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Profesional")]
+        public async Task<IActionResult> ReprogramarTurno(int id, DateTime? date)
+        {
+            var idUsuario = await ObtenerIdUsuarioLogueado();
+            if (idUsuario == null) return RedirectToAction("Login", "Account");
+
+            var turno = await _context.Turnos
+                .Include(t => t.Cliente).ThenInclude(c => c.Usuario)
+                .Include(t => t.TurnoServicios).ThenInclude(ts => ts.Servicio)
+                .FirstOrDefaultAsync(t => t.Id_Turno == id && t.Id_Profesional == idUsuario.Value);
+
+            if (turno == null || turno.Estado)
+                return RedirectToAction(nameof(MisTurnos));
+
+            var servicio = turno.TurnoServicios.FirstOrDefault()?.Servicio;
+            var duracion = servicio?.Duracion_Minutos ?? 45;
+            var selectedDate = date ?? turno.FechaHora.Date;
+
+            var occupiedSlots = await _context.Turnos
+                .Where(t => t.Id_Profesional == idUsuario.Value
+                            && t.FechaHora.Date == selectedDate.Date
+                            && t.Estado == false
+                            && t.Id_Turno != id)
+                .Select(t => t.FechaHora)
+                .ToListAsync();
+
+            var slots = GenerateTimeSlotsProfesional(selectedDate, duracion, occupiedSlots);
+
+            ViewBag.TurnoId = turno.Id_Turno;
+            ViewBag.ClienteNombre = turno.Cliente.Usuario.Nombre + " " + turno.Cliente.Usuario.Apellido;
+            ViewBag.ServicioNombre = servicio?.Nombre ?? "";
+            ViewBag.Duracion = duracion;
+            ViewBag.FechaActual = turno.FechaHora.ToString("dd/MM/yyyy HH:mm");
+            ViewBag.SelectedDate = selectedDate.ToString("yyyy-MM-dd");
+
+            return View(slots);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Profesional")]
+        public async Task<IActionResult> ReprogramarTurno(int id, string nuevaFecha, string nuevaHora)
+        {
+            var idUsuario = await ObtenerIdUsuarioLogueado();
+            if (idUsuario == null) return RedirectToAction("Login", "Account");
+
+            var turno = await _context.Turnos
+                .Include(t => t.TurnoServicios).ThenInclude(ts => ts.Servicio)
+                .FirstOrDefaultAsync(t => t.Id_Turno == id && t.Id_Profesional == idUsuario.Value);
+
+            if (turno == null || turno.Estado)
+                return RedirectToAction(nameof(MisTurnos));
+
+            if (string.IsNullOrEmpty(nuevaFecha) || string.IsNullOrEmpty(nuevaHora))
+            {
+                TempData["Error"] = "Seleccioná una fecha y hora.";
+                return RedirectToAction(nameof(ReprogramarTurno), new { id });
+            }
+
+            var nuevaFechaHora = DateTime.Parse($"{nuevaFecha} {nuevaHora}");
+
+            var duracion = turno.TurnoServicios.FirstOrDefault()?.Servicio.Duracion_Minutos ?? 45;
+
+            var ocupado = await _context.Turnos
+                .AnyAsync(t => t.Id_Profesional == idUsuario.Value
+                              && t.FechaHora.Date == nuevaFechaHora.Date
+                              && t.Estado == false
+                              && t.Id_Turno != id
+                              && t.FechaHora < nuevaFechaHora.AddMinutes(duracion)
+                              && t.FechaHora.AddMinutes(duracion) > nuevaFechaHora);
+
+            if (ocupado)
+            {
+                TempData["Error"] = "Ese horario ya está ocupado. Elegí otro.";
+                return RedirectToAction(nameof(ReprogramarTurno), new { id, date = nuevaFecha });
+            }
+
+            turno.FechaHora = nuevaFechaHora;
+            await _context.SaveChangesAsync();
+
+            TempData["Exito"] = "Turno reprogramado correctamente.";
+            return RedirectToAction(nameof(MisTurnos));
+        }
+
+        private List<TimeSlotItem> GenerateTimeSlotsProfesional(DateTime date, int durationMinutes, List<DateTime> occupiedSlots)
+        {
+            var slots = new List<TimeSlotItem>();
+            var start = date.Date.AddHours(9);
+            var end = date.Date.AddHours(18);
+
+            for (var time = start; time.AddMinutes(durationMinutes) <= end; time = time.AddMinutes(durationMinutes))
+            {
+                var isOccupied = occupiedSlots.Any(o =>
+                    o < time.AddMinutes(durationMinutes) && o.AddMinutes(durationMinutes) > time);
+
+                slots.Add(new TimeSlotItem
+                {
+                    DateTime = time,
+                    Display = time.ToString("HH:mm") + " - " + time.AddMinutes(durationMinutes).ToString("HH:mm"),
+                    Available = !isOccupied
+                });
+            }
+
+            return slots;
+        }
+
         private async Task<IActionResult> FormularioDesdeProfesional(int idUsuario, string modo)
         {
             var model = await ObtenerProfesionalViewModel(idUsuario);
@@ -333,9 +505,12 @@ namespace Gestor_Salon_Belleza.Controllers
             return await Formulario(model, modo);
         }
 
-        private int? ObtenerIdUsuarioLogueado()
+        private async Task<int?> ObtenerIdUsuarioLogueado()
         {
-            return HttpContext.Session.GetInt32("Id_Usuario");
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email)) return null;
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+            return usuario?.Id_Usuario;
         }
 
         private async Task<ProfesionalViewModel?> ObtenerProfesionalViewModel(int idUsuario)

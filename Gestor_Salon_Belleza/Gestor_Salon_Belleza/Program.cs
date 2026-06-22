@@ -12,7 +12,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 if (string.IsNullOrWhiteSpace(connectionString))
 {
-    throw new InvalidOperationException("No se encontró la cadena de conexión 'DefaultConnection'. Revisá appsettings.json.");
+    throw new InvalidOperationException("No se encontrï¿½ la cadena de conexiï¿½n 'DefaultConnection'. Revisï¿½ appsettings.json.");
 }
 
 builder.Services.AddDbContext<AppDBContext>(options =>
@@ -25,7 +25,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
     // Para rutas [Authorize], manda al login manual.
-    // Para Google, se usa Challenge explícito desde el AccountController.
+    // Para Google, se usa Challenge explï¿½cito desde el AccountController.
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
 
@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(options =>
 })
 
 // Cookie temporal para guardar los datos que devuelve Google
-// antes de crear/iniciar sesión con el usuario local de tu BD
+// antes de crear/iniciar sesiï¿½n con el usuario local de tu BD
 .AddCookie("External")
 
 .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
@@ -51,19 +51,19 @@ builder.Services.AddAuthentication(options =>
 
     if (string.IsNullOrWhiteSpace(googleClientId))
     {
-        throw new InvalidOperationException("No se encontró GoogleKeys:ClientId. Revisá appsettings.json.");
+        throw new InvalidOperationException("No se encontrï¿½ GoogleKeys:ClientId. Revisï¿½ appsettings.json.");
     }
 
     if (string.IsNullOrWhiteSpace(googleClientSecret))
     {
-        throw new InvalidOperationException("No se encontró GoogleKeys:ClientSecret. Revisá appsettings.json.");
+        throw new InvalidOperationException("No se encontrï¿½ GoogleKeys:ClientSecret. Revisï¿½ appsettings.json.");
     }
 
     options.ClientId = googleClientId;
     options.ClientSecret = googleClientSecret;
 
     // Google deja los datos en una cookie temporal.
-    // Después tu AccountController los lee, crea/busca el Usuario y firma la cookie principal.
+    // Despuï¿½s tu AccountController los lee, crea/busca el Usuario y firma la cookie principal.
     options.SignInScheme = "External";
 });
 

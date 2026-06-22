@@ -10,7 +10,10 @@
             <p>Descubre un espacio diseñado exclusivamente para tu bienestar y estilo. En <strong>Glow &amp; Style</strong> combinamos técnicas de vanguardia, productos de alta gama y un equipo de profesionales apasionados para resaltar tu verdadera esencia.</p>
 
             <div class="cta-container">
-                <a asp-controller="Home" asp-action="Services" class="btn btn-primary">Reservar Cita</a>
+                @if (!(User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Profesional") || User.IsInRole("Administrador"))))
+                {
+                    <a asp-controller="Home" asp-action="Services" class="btn btn-primary">Reservar Cita</a>
+                }
                 @if (!(User.Identity != null && User.Identity.IsAuthenticated))
                 {
                     <a asp-controller="Account" asp-action="Register" class="btn btn-secondary">Registrarse</a>

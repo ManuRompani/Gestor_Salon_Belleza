@@ -18,6 +18,7 @@ namespace Gestor_Salon_Belleza.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "Cliente")]
         [HttpGet]
         public async Task<IActionResult> SelectProfessional(int serviceId)
         {
@@ -49,6 +50,7 @@ namespace Gestor_Salon_Belleza.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Cliente")]
         [HttpGet]
         public async Task<IActionResult> SelectSchedule(int serviceId, int professionalId, DateTime? date)
         {
@@ -85,6 +87,7 @@ namespace Gestor_Salon_Belleza.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Cliente")]
         [HttpGet]
         public async Task<IActionResult> SelectServiceForProfessional(int professionalId)
         {

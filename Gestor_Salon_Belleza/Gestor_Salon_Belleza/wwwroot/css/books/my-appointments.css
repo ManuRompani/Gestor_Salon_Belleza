@@ -1,31 +1,3 @@
-.turnos-wrapper {
-    flex: 1;
-    padding: 56px 8% 70px;
-}
-
-.turnos-hero {
-    text-align: center;
-    max-width: 620px;
-    margin: 0 auto 52px;
-}
-
-.turnos-hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 3rem;
-    font-weight: 700;
-    color: #353654;
-    line-height: 1.15;
-    letter-spacing: -0.4px;
-    margin: 0 auto 18px;
-}
-
-.turnos-hero p {
-    font-size: 0.94rem;
-    color: #6f6c77;
-    line-height: 1.9;
-    margin: 0 auto;
-}
-
 .appointments-list {
     max-width: 720px;
     margin: 0 auto;
@@ -57,7 +29,7 @@
     font-family: 'Playfair Display', serif;
     font-size: 1.15rem;
     font-weight: 700;
-    color: #353654;
+    color: var(--text-dark);
     margin: 0;
 }
 
@@ -72,7 +44,7 @@
 
 .badge-active { background-color: #e0f0e3; color: #2d6a4f; }
 .badge-cancelled { background-color: #f8e8e8; color: #c0392b; }
-.badge-completed { background-color: #f0ecea; color: #a29791; }
+.badge-completed { background-color: #f0ecea; color: var(--text-muted); }
 
 .appointment-body {
     display: flex;
@@ -85,14 +57,14 @@
 
 .info-label {
     font-size: 0.8rem;
-    color: #a29791;
+    color: var(--text-muted);
     font-weight: 500;
     min-width: 120px;
 }
 
 .info-value {
     font-size: 0.88rem;
-    color: #353654;
+    color: var(--text-dark);
     font-weight: 500;
 }
 
