@@ -22,7 +22,7 @@
         font-family: "Playfair Display", Georgia, serif;
         font-size: 36px;
         line-height: 1.1;
-        color: #23263b;
+        color: var(--text-dark);
         margin: 0 0 14px;
     }
 
@@ -41,21 +41,11 @@
 }
 
 
-.form-row {
-    display: flex;
-    gap: 16px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-    flex: 1;
-}
-    
     .form-group label{
     display: block;
     font-size: 12px;
     font-weight: 600;
-    color: #23263b;
+    color: var(--text-dark);
     text-transform: uppercase;
     letter-spacing: 1.5px;
     margin-bottom: 8px;
@@ -68,7 +58,7 @@
     border: 1px solid rgba(181, 131, 118, 0.55);
     border-radius: 28px;
     background-color: rgba(255, 255, 255, 0.5);
-    color: #23263b;
+    color: var(--text-dark);
     padding: 0 18px;
     font-size: 14px;
     outline: none;
@@ -83,7 +73,7 @@
     border: 1px solid rgba(181, 131, 118, 0.55);
     border-radius: 24px;
     background-color: rgba(255, 255, 255, 0.5);
-    color: #23263b;
+    color: var(--text-dark);
     padding: 16px 18px;
     font-size: 14px;
     outline: none;
@@ -102,29 +92,6 @@
     .form-group textarea::placeholder {
         color: rgba(35, 38, 59, 0.45);
     }
-
-.services-back-link {
-    display: flex;
-    justify-content: center;    
-    padding: 15px;
-    color: #23263b;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-
-.alert-exito {
-    background-color: rgba(181, 131, 118, 0.08);
-    border: 1px solid #b58376;
-    color: #23263b;
-    padding: 12px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 22px;
-    text-align: left;
-}
 
 
 .form-actions {
@@ -156,7 +123,7 @@
 
 
 .btn-primary {
-    background-color: #23263b;
+    background-color: var(--text-dark);
     color: #ffffff;
 }
 
@@ -171,10 +138,5 @@
 @media (max-width: 600px) {
     .form-header h2 {
         font-size: 34px;
-    }
-
-    .form-row {
-        flex-direction: column;
-        gap: 0;
     }
 }

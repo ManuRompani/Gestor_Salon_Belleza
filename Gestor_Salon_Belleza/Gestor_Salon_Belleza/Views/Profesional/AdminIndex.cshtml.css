@@ -116,19 +116,6 @@
     padding: 28px 18px !important;
 }
 
-.professional-back-link {
-    display: inline-block;
-    margin-top: 24px;
-    color: #23263b;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-    .professional-back-link:hover {
-        text-decoration: underline;
-    }
-
 @media (max-width: 768px) {
     .profesional-index-page {
         padding: 45px 16px 70px;

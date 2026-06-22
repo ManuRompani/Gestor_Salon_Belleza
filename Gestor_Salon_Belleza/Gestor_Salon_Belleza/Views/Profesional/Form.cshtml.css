@@ -221,16 +221,3 @@
         font-size: 34px;
     }
 }
-
-.professional-back-link {
-    display: inline-block;
-    margin-top: 24px;
-    color: #23263b;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.professional-back-link:hover {
-    text-decoration: underline;
-}

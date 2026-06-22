@@ -53,9 +53,12 @@
                                 }
                             </div>
                         }
-                        <a asp-controller="Books" asp-action="SelectServiceForProfessional" asp-route-professionalId="@profesional.Id_Usuario" class="btn btn-primary btn-turno">
-                            Reservar turno
-                        </a>
+                        @if (!(User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Profesional") || User.IsInRole("Administrador"))))
+                        {
+                            <a asp-controller="Books" asp-action="SelectServiceForProfessional" asp-route-professionalId="@profesional.Id_Usuario" class="btn btn-primary btn-turno">
+                                Reservar turno
+                            </a>
+                        }
                     </div>
                 </div>
             }

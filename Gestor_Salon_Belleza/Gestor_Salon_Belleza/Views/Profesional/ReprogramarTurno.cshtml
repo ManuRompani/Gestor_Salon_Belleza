@@ -1,0 +1,82 @@
+@using Gestor_Salon_Belleza.ViewModels
+@model List<TimeSlotItem>
+@{
+    ViewData["Title"] = "Reprogramar Turno - Glow & Style";
+}
+@section DashboardAdmin {
+    <link rel="stylesheet" href="~/css/admin/mis-turnos.css" asp-append-version="true" />
+}
+
+<div class="turnos-wrapper">
+    <div class="turnos-hero">
+        <span class="subtitle">Reprogramar Turno</span>
+        <h1>Elegí un nuevo horario</h1>
+        <p>Turno de <strong>@ViewBag.ClienteNombre</strong> — @ViewBag.ServicioNombre (@ViewBag.Duracion min)</p>
+        <p class="turno-actual">Horario actual: <strong>@ViewBag.FechaActual</strong></p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-error">@TempData["Error"]</div>
+    }
+
+    <div class="reprogramar-form">
+        <form method="get" asp-action="ReprogramarTurno" class="date-picker-form">
+            <input type="hidden" name="id" value="@ViewBag.TurnoId" />
+            <label for="date">Nueva fecha</label>
+            <input type="date" id="date" name="date"
+                   value="@ViewBag.SelectedDate"
+                   min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                   onchange="this.form.submit()" />
+        </form>
+
+        @if (Model.Any())
+        {
+            <form method="post" asp-action="ReprogramarTurno" class="slots-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@ViewBag.TurnoId" />
+                <input type="hidden" name="nuevaFecha" value="@ViewBag.SelectedDate" />
+
+                <div class="slots-grid">
+                    @foreach (var slot in Model)
+                    {
+                        @if (slot.Available)
+                        {
+                            <label class="slot-card slot-available">
+                                <input type="radio" name="nuevaHora" value="@slot.DateTime.ToString("HH:mm")" class="slot-radio" />
+                                <span>@slot.Display</span>
+                            </label>
+                        }
+                        else
+                        {
+                            <div class="slot-card slot-occupied">
+                                @slot.Display
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="reprogramar-actions">
+                    <a asp-action="MisTurnos" class="btn btn-secondary">Volver</a>
+                    <button type="submit" class="btn btn-primary btn-reprogramar-submit" disabled>Confirmar reprogramación</button>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="turnos-empty">
+                <p>No hay horarios disponibles para esta fecha.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.slot-radio').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                document.querySelector('.btn-reprogramar-submit').disabled = false;
+            });
+        });
+    </script>
+}

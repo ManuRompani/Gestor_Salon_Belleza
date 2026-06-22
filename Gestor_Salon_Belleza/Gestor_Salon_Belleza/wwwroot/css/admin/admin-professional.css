@@ -6,7 +6,7 @@
 .profesional-index-page {
     min-height: calc(100vh - 160px);
     background-color: #fbf4f0;
-    color: #23263b;
+    color: var(--text-dark);
     font-family: "Montserrat", Arial, sans-serif;
     padding: 70px 20px 90px;
     box-sizing: border-box;
@@ -31,7 +31,7 @@
     font-family: "Playfair Display", Georgia, serif;
     font-size: 42px;
     line-height: 1.1;
-    color: #23263b;
+    color: var(--text-dark);
     margin: 0 0 24px;
 }
 
@@ -40,7 +40,7 @@
     margin: 0 auto 34px;
     font-size: 15px;
     line-height: 1.7;
-    color: #23263b;
+    color: var(--text-dark);
 }
 
 .professional-toolbar {
@@ -55,7 +55,7 @@
     border: none;
     border-radius: 28px;
     padding: 13px 26px;
-    background-color: #23263b;
+    background-color: var(--text-dark);
     color: #ffffff;
     font-size: 14px;
     font-weight: 700;
@@ -79,7 +79,7 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
-    color: #23263b;
+    color: var(--text-dark);
 }
 
 .professional-table th {
@@ -89,7 +89,7 @@
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 1.4px;
-    color: #23263b;
+    color: var(--text-dark);
     background-color: rgba(255, 255, 255, 0.28);
 }
 
@@ -105,7 +105,7 @@
 }
 
 .professional-row-action {
-    color: #23263b;
+    color: var(--text-dark);
     font-weight: 700;
     text-decoration: none;
 }
@@ -119,19 +119,6 @@
     color: #b58376;
     font-weight: 600;
     padding: 28px 18px !important;
-}
-
-.professional-back-link {
-    display: inline-block;
-    margin-top: 24px;
-    color: #23263b;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.professional-back-link:hover {
-    text-decoration: underline;
 }
 
 @media (max-width: 768px) {

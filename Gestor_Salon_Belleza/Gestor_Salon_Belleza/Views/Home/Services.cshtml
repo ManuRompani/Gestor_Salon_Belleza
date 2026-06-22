@@ -36,9 +36,12 @@
                             </span>
                             <span class="servicio-precio">$@servicio.Precio.ToString("N0")</span>
                         </div>
-                        <a asp-controller="Books" asp-action="SelectProfessional" asp-route-serviceId="@servicio.Id_Servicio" class="btn btn-primary btn-reservar">
-                            Reservar
-                        </a>
+                        @if (!(User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Profesional") || User.IsInRole("Administrador"))))
+                        {
+                            <a asp-controller="Books" asp-action="SelectProfessional" asp-route-serviceId="@servicio.Id_Servicio" class="btn btn-primary btn-reservar">
+                                Reservar
+                            </a>
+                        }
                     </div>
                 </div>
             }

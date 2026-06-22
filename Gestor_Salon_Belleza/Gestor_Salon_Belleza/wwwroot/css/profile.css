@@ -18,7 +18,7 @@
 .profile-header h1 {
     font-family: 'Playfair Display', serif;
     font-size: 2.6rem;
-    color: #353654;
+    color: var(--text-dark);
     margin-bottom: 10px;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .profile-copy {
-    color: #6f6c77;
+    color: var(--text-color);
     font-size: 0.94rem;
     line-height: 1.8;
     margin-bottom: 28px;
@@ -86,7 +86,7 @@
 
 .profile-help {
     font-size: 0.8rem;
-    color: #a29791;
+    color: var(--text-muted);
 }
 
 .profile-validation {

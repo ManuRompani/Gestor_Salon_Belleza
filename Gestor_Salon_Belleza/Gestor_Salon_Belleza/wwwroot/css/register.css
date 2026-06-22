@@ -27,7 +27,7 @@
 .auth-error-alert {
     background-color: rgba(181, 131, 118, 0.08);
     border: 1px solid #b58376;
-    color: #23263b;
+    color: var(--text-dark);
     padding: 12px 16px;
     border-radius: 20px;
     font-size: 13px;
