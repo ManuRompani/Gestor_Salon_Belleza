@@ -1,28 +1,85 @@
 @model Gestor_Salon_Belleza.ViewModels.ProfesionalViewModel
 
 @{
+    /*
+        Aca leo el modo que me manda el controller.
+
+        Esta misma vista la uso para varias pantallas:
+        - Create
+        - Details
+        - Edit
+        - Delete
+        - MiPerfil
+        - EditMiPerfil
+        - BajaMiPerfil
+
+        Si por algun motivo no viene ViewBag.Modo, asumo "Create"
+        para que la vista tenga un comportamiento por defecto.
+    */
     string modo = (ViewBag.Modo as string ?? "Create").Trim();
 
+    /*
+        Aca identifico exactamente en que modo estoy.
+        Esto me ayuda a no repetir todo el tiempo comparaciones como:
+        modo == "Create"
+    */
     bool esCreate = modo == "Create";
     bool esDetails = modo == "Details";
     bool esEdit = modo == "Edit";
     bool esDelete = modo == "Delete";
 
+    /*
+        Estos modos son para cuando el profesional esta trabajando
+        sobre su propio perfil, no sobre otro profesional desde admin.
+    */
     bool esMiPerfil = modo == "MiPerfil";
     bool esEditMiPerfil = modo == "EditMiPerfil";
     bool esBajaMiPerfil = modo == "BajaMiPerfil";
 
+    /*
+        Aca agrupo modos que se comportan parecido.
+
+        esBaja:
+        lo uso para saber si estoy en una pantalla de baja logica.
+
+        esEdicion:
+        lo uso para saber si estoy modificando datos.
+
+        esLectura:
+        lo uso para saber si solo estoy mostrando informacion.
+
+        soloLectura:
+        lo uso para deshabilitar los inputs cuando no quiero que el usuario edite.
+    */
     bool esBaja = esDelete || esBajaMiPerfil;
     bool esEdicion = esEdit || esEditMiPerfil;
     bool esLectura = esDetails || esMiPerfil;
     bool soloLectura = esLectura || esBaja;
 
+    /*
+        Muestro los campos de contrasenia solamente cuando creo o edito.
+        En detalle, baja o mi perfil normal no tiene sentido mostrarlos.
+    */
     bool mostrarPassword = esCreate || esEdicion;
+
+    /*
+        La validacion de servicios en el front solo la necesito cuando
+        el usuario puede crear o editar.
+        Si esta viendo o dando de baja, no hace falta validar servicios.
+    */
     bool validarServiciosFront = esCreate || esEdicion;
 
+    /*
+        Dejo estos valores como constantes para no repetir strings
+        y evitar errores de tipeo.
+    */
     const string accionAdminIndex = "AdminIndex";
     const string claseVolver = "back-link";
 
+    /*
+        Segun el modo, defino el titulo principal de la pantalla.
+        Este titulo despues lo muestro en el h2 de la vista.
+    */
     string titulo = modo switch
     {
         "Create" => "Crear Profesional",
@@ -34,6 +91,11 @@
         _ => "Detalle Profesional"
     };
 
+    /*
+        Segun el modo, defino el subtitulo.
+        Algunos modos comparten el mismo subtitulo porque representan
+        una operacion parecida.
+    */
     string subtitulo = modo switch
     {
         "Create" => "ALTA DE PROFESIONAL",
@@ -43,6 +105,15 @@
         _ => "CONSULTA DE DATOS"
     };
 
+    /*
+        Aca defino a que action del controller se va a enviar el formulario.
+
+        Ejemplo:
+        Si modo es "Create", el form hace POST a Profesional/Create.
+
+        En el caso de EditMiPerfil, el modo interno se llama asi,
+        pero la action real del controller se llama EditarMiPerfil.
+    */
     string accionFormulario = modo switch
     {
         "Create" => "Create",
@@ -53,6 +124,10 @@
         _ => "Details"
     };
 
+    /*
+        Si estoy en una pantalla de baja, preparo un texto de advertencia.
+        Si no estoy en baja, dejo null para no mostrar ninguna alerta.
+    */
     string? textoAlertaBaja = modo switch
     {
         "Delete" => "Esta accion dara de baja al profesional de forma logica. No se eliminara fisicamente de la base de datos.",
@@ -60,13 +135,33 @@
         _ => null
     };
 
+    /*
+        En esta lista voy guardando las acciones que aparecen abajo del formulario.
+
+        Cada accion puede ser:
+        - un boton submit
+        - un link
+
+        La estructura que guardo es:
+        Tipo, Texto, Clase, Controller, Action y RouteValues.
+    */
     var acciones = new List<(string Tipo, string Texto, string Clase, string Controller, string Action, object? RouteValues)>();
 
+    /*
+        Uso este metodo para agregar botones que envian el formulario.
+        Como es submit, no necesito controller ni action aca,
+        porque eso ya lo define el form con asp-action.
+    */
     void AgregarSubmit(string texto, string clase)
     {
         acciones.Add(("submit", texto, clase, string.Empty, string.Empty, null));
     }
 
+    /*
+        Uso este metodo para agregar links.
+        Por defecto apuntan al controller Profesional.
+        Si necesito pasar un id, lo mando en routeValues.
+    */
     void AgregarLink(
         string texto,
         string action,
@@ -77,28 +172,53 @@
         acciones.Add(("link", texto, clase, controller, action, routeValues));
     }
 
+    /*
+        Atajo para agregar el link Volver.
+        Lo dejo separado porque lo uso en varios modos.
+    */
     void AgregarVolver()
     {
         AgregarLink("Volver", accionAdminIndex, claseVolver);
     }
 
+    /*
+        Atajo para agregar el link Cancelar.
+        Le paso la action a la que quiero volver.
+        Si hace falta, tambien le paso el id.
+    */
     void AgregarCancelar(string action, object? routeValues = null)
     {
         AgregarLink("Cancelar", action, claseVolver, routeValues);
     }
 
+    /*
+        Aca armo los botones finales segun el modo actual.
+        La idea es que cada pantalla muestre solamente las acciones que corresponden.
+    */
     switch (modo)
     {
         case "Create":
+            /*
+                En creacion necesito:
+                - crear el profesional
+                - volver al listado
+            */
             AgregarSubmit("Crear profesional", "btn-primary-custom");
             AgregarVolver();
             break;
 
         case "Details":
+            /*
+                En detalle no guardo nada.
+                Solo doy opciones para editar, dar de baja o volver.
+
+                Como Edit y Delete necesitan saber sobre que profesional trabajan,
+                les paso el Id_Usuario por ruta.
+            */
             AgregarLink(
                 "Editar profesional",
                 "Edit",
-                "btn-primary-custom professional-button-link",
+                "professional-edit-as-button",
                 new { id = Model.Id_Usuario });
 
             AgregarLink(
@@ -111,16 +231,30 @@
             break;
 
         case "Edit":
+            /*
+                En edicion necesito:
+                - guardar cambios
+                - cancelar y volver al detalle del profesional
+            */
             AgregarSubmit("Guardar cambios", "btn-primary-custom");
             AgregarCancelar("Details", new { id = Model.Id_Usuario });
             break;
 
         case "Delete":
+            /*
+                En baja logica no edito datos.
+                Solo confirmo la baja o cancelo.
+            */
             AgregarSubmit("Confirmar baja", "btn-primary-custom professional-delete-button");
             AgregarCancelar("Details", new { id = Model.Id_Usuario });
             break;
 
         case "MiPerfil":
+            /*
+                En mi perfil no paso id por URL.
+                El controller deberia obtener el usuario logueado
+                desde claims o sesion.
+            */
             AgregarLink(
                 "Editar mi perfil",
                 "EditarMiPerfil",
@@ -135,77 +269,34 @@
             break;
 
         case "EditMiPerfil":
+            /*
+                Cuando edito mi propio perfil, puedo guardar cambios
+                o cancelar para volver a MiPerfil.
+            */
             AgregarSubmit("Guardar cambios", "btn-primary-custom");
             AgregarCancelar("MiPerfil");
             break;
 
         case "BajaMiPerfil":
+            /*
+                Cuando doy de baja mi propio perfil,
+                solo confirmo la baja o cancelo.
+            */
             AgregarSubmit("Confirmar baja de mi perfil", "btn-primary-custom professional-delete-button");
             AgregarCancelar("MiPerfil");
             break;
     }
 
+    /*
+        Este titulo lo usa el layout para la pestania del navegador.
+    */
     ViewData["Title"] = titulo;
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
 <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/register.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/professional.css" asp-append-version="true" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
-
-<style>
-    .crop-modal {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.65);
-        z-index: 9999;
-        display: none;
-        align-items: center;
-        justify-content: center;
-    }
-    .crop-modal-content {
-        background: #fff;
-        border-radius: 12px;
-        padding: 28px;
-        max-width: 560px;
-        width: 92%;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-    }
-    .crop-modal-title {
-        font-family: "Playfair Display", Georgia, serif;
-        font-size: 22px;
-        color: #23263b;
-        margin: 0 0 18px 0;
-    }
-    .crop-img-container {
-        max-height: 420px;
-        overflow: hidden;
-        border-radius: 8px;
-        background: #f0f0f0;
-    }
-    .crop-img-container img {
-        max-width: 100%;
-        display: block;
-    }
-    .crop-modal-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        margin-top: 20px;
-    }
-    .crop-modal-actions .btn-primary-custom {
-        padding: 10px 24px;
-        font-size: 14px;
-    }
-    .crop-modal-actions .btn-google {
-        padding: 10px 24px;
-        font-size: 14px;
-        border: 1px solid #ccc;
-        background: #f5f5f5;
-        color: #333;
-    }
-</style>
 
 <section class="auth-container professional-shell">
     <div class="auth-card register-card professional-form-card">
@@ -293,7 +384,9 @@
                            class="form-control"
                            placeholder="@(esCreate ? "Mínimo 8 caracteres" : "Dejar vacío para no modificar")"
                            required="@esCreate"
-                           minlength="8" />
+                           minlength="8"
+                           data-msg-required="La contraseña es obligatoria."
+                           data-msg-minlength="La contraseña debe tener al menos 8 caracteres." />
                     <span asp-validation-for="Password" class="text-validation-error"></span>
                 </div>
 
@@ -303,7 +396,8 @@
                            type="password"
                            class="form-control"
                            placeholder="@(esCreate ? "Repetir contraseña" : "Repetir nueva contraseña")"
-                           required="@esCreate" />
+                           required="@esCreate"
+                           data-msg-required="Debe confirmar la contraseña." />
                     <span asp-validation-for="ConfirmarPassword" class="text-validation-error"></span>
                 </div>
             }
@@ -415,113 +509,10 @@
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-    @if (validarServiciosFront)
-    {
-        <script>
-            const profesionalForm = document.getElementById("profesionalForm");
-
-            profesionalForm?.addEventListener("submit", function (event) {
-                const serviciosSeleccionados = document.querySelectorAll('input[name="IdsServiciosSeleccionados"]:checked');
-                const error = document.getElementById("serviciosFrontError");
-
-                if (serviciosSeleccionados.length === 0) {
-                    event.preventDefault();
-
-                    if (error) {
-                        error.textContent = "Debe seleccionar al menos un servicio.";
-                    }
-
-                    return;
-                }
-
-                if (error) {
-                    error.textContent = "";
-                }
-            });
-        </script>
-    }
-
-    @if (!soloLectura)
-    {
-        <script>
-            let cropper;
-            const cropFileInput = document.getElementById('ImagenArchivo');
-            const cropModal = document.getElementById('cropModal');
-            const cropImage = document.getElementById('cropImage');
-            const cropConfirmBtn = document.getElementById('cropConfirmBtn');
-            const cropCancelBtn = document.getElementById('cropCancelBtn');
-
-            function actualizarPreview(url) {
-                let preview = document.querySelector('.professional-current-image');
-                let previewBox = document.querySelector('.professional-current-image-box');
-                if (!preview) {
-                    previewBox = document.createElement('div');
-                    previewBox.className = 'professional-current-image-box';
-                    preview = document.createElement('img');
-                    preview.className = 'professional-current-image';
-                    previewBox.appendChild(preview);
-                    cropFileInput.parentNode.insertBefore(previewBox, cropFileInput);
-                }
-                preview.src = url;
-                previewBox.style.display = '';
-            }
-
-            cropFileInput?.addEventListener('change', function () {
-                const file = this.files?.[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    cropImage.src = e.target.result;
-                    cropModal.style.display = 'flex';
-
-                    if (cropper) cropper.destroy();
-                    cropper = new Cropper(cropImage, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        autoCropArea: 1,
-                        background: false
-                    });
-                };
-                reader.readAsDataURL(file);
-            });
-
-            cropConfirmBtn?.addEventListener('click', function () {
-                if (!cropper) return;
-
-                const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
-                canvas.toBlob(function (blob) {
-                    const originalFile = cropFileInput.files[0];
-                    const croppedFile = new File([blob], originalFile.name, { type: 'image/jpeg' });
-                    const dt = new DataTransfer();
-                    dt.items.add(croppedFile);
-                    cropFileInput.files = dt.files;
-
-                    actualizarPreview(canvas.toDataURL('image/jpeg'));
-
-                    cropper.destroy();
-                    cropper = null;
-                    cropModal.style.display = 'none';
-                }, 'image/jpeg', 0.92);
-            });
-
-            cropCancelBtn?.addEventListener('click', function () {
-                if (cropper) { cropper.destroy(); cropper = null; }
-                cropModal.style.display = 'none';
-                cropFileInput.value = '';
-            });
-
-            cropModal?.addEventListener('click', function (e) {
-                if (e.target === this) {
-                    if (cropper) { cropper.destroy(); cropper = null; }
-                    cropModal.style.display = 'none';
-                    cropFileInput.value = '';
-                }
-            });
-        </script>
-    }
+    <script src="~/js/profesional-form.js" asp-append-version="true"></script>
 }
