@@ -315,7 +315,9 @@
               method="post"
               enctype="multipart/form-data"
               class="auth-form professional-form-layout"
-              id="profesionalForm">
+              id="profesionalForm"
+              data-validar-servicios="@(validarServiciosFront ? "true" : "false")"
+              data-usar-recorte="@(esCreate || esEdicion ? "true" : "false")">
 
             @Html.AntiForgeryToken()
 
