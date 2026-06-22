@@ -75,6 +75,7 @@
     }
 
         .services-table thead th {
+           
             padding: 14px 18px;
             text-align: left;
             font-weight: 500;
@@ -306,7 +307,8 @@
    RESPONSIVE — mostrar/ocultar
    ========================================== */
 .desktop-only {
-    display: block;
+    display: flex;
+    width: fit-content;
 }
 
 .mobile-only {

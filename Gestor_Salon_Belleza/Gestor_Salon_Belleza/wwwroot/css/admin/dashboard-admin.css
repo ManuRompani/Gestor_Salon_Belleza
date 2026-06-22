@@ -40,13 +40,11 @@
 
 
 
-.flex-dashboard {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important; /* Prohíbe terminantemente que bajen */
-    flex-grow: 1;
-    align-items: anchor-center;
-    gap: 30px; /* Separación entre las dos cajas */
+.container-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));   
+    flex-grow: 1;   
+    gap: 30px;
     width: 100%;    
 
     padding-left: 20px;
@@ -54,33 +52,31 @@
 }
 
 
-.dashboard-card {
-    
+.card {      
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;    
     align-items: center;
-    text-align: center;     
-    
+    text-align: center;
     background-color: var(--white);
     border: 2px solid var(--primary-color);
     border-radius: 8px;
     padding: 30px;
     height: 100%;
     flex: 1 1 0% !important;
-    min-width: 0; 
-    
+    min-width: 0;
 }
 
 
-    .dashboard-card h2 {
+    .card h2 {
         color: var(--dark-color);
         margin-bottom: 15px;
         font-weight: 600;
         font-family: "Playfair Display", Georgia, serif;
     }
 
-    .dashboard-card p {
+    .card p {
         color: #666;
         font-size: 0.8rem;
         margin-bottom: 25px;
@@ -88,7 +84,7 @@
     }
 
 @media (max-width: 768px) {
-    .flex-dashboard {
+    .card-container {
         flex-direction: column !important; /* Los apila verticalmente */
         padding: 20px; /* Reduce el espacio libre de los lados en celulares */
         gap: 20px; /* Achica la separación entre tarjetas */
