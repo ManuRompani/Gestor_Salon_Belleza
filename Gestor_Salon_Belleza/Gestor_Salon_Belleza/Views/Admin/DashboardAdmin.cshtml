@@ -18,9 +18,9 @@
 
 
 
-<div class="flex-dashboard">
+<div class="container-card">
 
-    <div class="dashboard-card">
+    <div class="card">
         <div>
             <h2>Servicios</h2>
             <p class="dash-desc">Administrá altas, bajas lógicas, modificaciones de precios y tiempos estimados de los tratamientos del salón.</p>
@@ -35,7 +35,7 @@
 
     </div>
 
-    <div class="dashboard-card">
+    <div class="card">
         <div>
             <h2>Profesionales</h2>
             <p class="dash-desc">Administrá el equipo de estilistas, asigná sus especialidades de servicio y controlá sus horarios de atención.</p>
@@ -48,6 +48,18 @@
 
     </div>
 
+            <div class="card">
+                <div>
+                    <h2>Usuarios</h2>
+                    <p class="dash-desc">Administrá los usuarios registrados, visualiza desde donde se registraron y cambia su rol.</p>
+                </div>
+
+                <div>
+                    <a asp-controller="Admin" asp-action="IndexUsuarios" class="btn btn-primary">Gestionar Usuarios</a>
+                </div>
+
+
+            </div>
 
 
 </div>
