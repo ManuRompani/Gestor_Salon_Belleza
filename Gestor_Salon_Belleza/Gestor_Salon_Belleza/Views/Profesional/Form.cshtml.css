@@ -28,3 +28,65 @@
         color: #ffffff;
         text-decoration: none;
     }
+
+.professional-current-image-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.professional-current-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #c9c7c5;
+}
+
+.crop-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(35, 38, 59, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.crop-modal-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    max-width: 520px;
+    width: 92%;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.crop-modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #353654;
+    text-align: center;
+    margin: 0 0 18px;
+}
+
+.crop-img-container {
+    max-height: 70vh;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.crop-img-container img {
+    display: block;
+    max-width: 100%;
+    max-height: 70vh;
+}
+
+.crop-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
