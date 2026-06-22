@@ -51,12 +51,12 @@ builder.Services.AddAuthentication(options =>
 
     if (string.IsNullOrWhiteSpace(googleClientId))
     {
-        throw new InvalidOperationException("No se encontr� GoogleKeys:ClientId. Revis� appsettings.json.");
+        throw new InvalidOperationException("No se encontró GoogleKeys:ClientId. Revisó appsettings.json.");
     }
 
     if (string.IsNullOrWhiteSpace(googleClientSecret))
     {
-        throw new InvalidOperationException("No se encontr� GoogleKeys:ClientSecret. Revis� appsettings.json.");
+        throw new InvalidOperationException("No se encontró GoogleKeys:ClientSecret. Revisó appsettings.json.");
     }
 
     options.ClientId = googleClientId;
@@ -65,6 +65,14 @@ builder.Services.AddAuthentication(options =>
     // Google deja los datos en una cookie temporal.
     // Despu�s tu AccountController los lee, crea/busca el Usuario y firma la cookie principal.
     options.SignInScheme = "External";
+    options.Events.OnRemoteFailure = context =>
+    {
+        context.HandleResponse();
+
+        context.Response.Redirect("/Account/Login?externalLoginError=google_cancelled");
+
+        return Task.CompletedTask;
+    };
 });
 
 
