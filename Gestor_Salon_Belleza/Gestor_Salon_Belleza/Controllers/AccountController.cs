@@ -1,5 +1,6 @@
 ﻿using Gestor_Salon_Belleza.Data;
 using Gestor_Salon_Belleza.Models;
+using Gestor_Salon_Belleza.Services.Email;
 using Gestor_Salon_Belleza.Utils.Enumerables;
 using Gestor_Salon_Belleza.ViewModels;
 using Microsoft.AspNetCore.Authentication;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace Gestor_Salon_Belleza.Controllers
@@ -16,26 +18,28 @@ namespace Gestor_Salon_Belleza.Controllers
     public class AccountController : Controller
     {
 
-        private readonly AppDBContext _context; 
+        private readonly AppDBContext _context;
+        private readonly EmailService _emailService;
 
-        public AccountController(AppDBContext context)
+        public AccountController(AppDBContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
 
 
-    /*===== LOGIN =====*/
+        /*===== LOGIN =====*/
 
-        [HttpGet] 
+        [HttpGet]
         public IActionResult Login() {
-            if (User.Identity != null && User.Identity.IsAuthenticated) 
+            if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
             else
             {
-                return View(); 
+                return View();
             }
         }
 
@@ -63,7 +67,7 @@ namespace Gestor_Salon_Belleza.Controllers
                     IsPersistent = recordarme
                 });
         }
-       
+
         [HttpPost]
         public async Task<IActionResult> LoginAuthenticate(LoginViewModel model, string? returnUrl = null)
         {
@@ -76,9 +80,9 @@ namespace Gestor_Salon_Belleza.Controllers
             // Paso 2:
             // Buscamos el usuario por email e incluimos el Rol porque luego esa información
             // se copia a las claims de la cookie local.
-            
+
             var usuarioBuscado = await _context.Usuarios
-                .Include( u => u.Rol)
+                .Include(u => u.Rol)
             .FirstOrDefaultAsync(u => u.Email == model.Email);
 
             // Paso 3:
@@ -340,7 +344,7 @@ namespace Gestor_Salon_Belleza.Controllers
         }
 
 
-    /*===== LOGOUT =====*/
+        /*===== LOGOUT =====*/
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -402,6 +406,10 @@ namespace Gestor_Salon_Belleza.Controllers
                 return RedirectToAction(nameof(RedirectByRol));
             }
 
+            // Si el cliente empezó a escribir una nueva contraseña,
+            // validamos ese subflujo antes de tocar la base.
+            ValidarCambioPasswordPerfil(model);
+
             // El POST vuelve a validar el ViewModel porque nunca debemos confiar
             // solamente en lo que validó el navegador del usuario.
             if (!ModelState.IsValid)
@@ -430,6 +438,13 @@ namespace Gestor_Salon_Belleza.Controllers
             usuario.Apellido = model.Apellido;
             usuario.Telefono = model.Telefono;
 
+            // Si el usuario decidió cambiar la contraseña desde perfil,
+            // guardamos el hash y nunca la contraseña en texto plano.
+            if (!string.IsNullOrWhiteSpace(model.NuevaPassword))
+            {
+                usuario.Password = HashearPassword(usuario, model.NuevaPassword);
+            }
+
             await _context.SaveChangesAsync();
 
             // Refirmamos la cookie para que las claims reflejen los datos actualizados del perfil.
@@ -443,24 +458,21 @@ namespace Gestor_Salon_Belleza.Controllers
         }
 
 
-    /*===== REGISTER =====*/
+        /*===== REGISTER =====*/
 
         public IActionResult Register()
         {
-            if (User.Identity != null && User.Identity.IsAuthenticated) 
+            if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
             else
             {
-                return View(); 
+                return View();
             }
         }
 
         public async Task<IActionResult> RegisterAuthenticate(RegisterViewModel model) {
-
-            var hasher = new PasswordHasher<Usuario>();
-
             /* Validar el modelo - LISTO
              * Verificar que el email no esté ya registrado - LISTO
              * Hashear la contraseña - LISTO
@@ -480,8 +492,6 @@ namespace Gestor_Salon_Belleza.Controllers
                 return View("Register", model);
             }
 
-            var passwordHasheada = hasher.HashPassword(new Usuario(), model.Password);
-
             // Flujo de alta manual:
             // 1. Guardamos la identidad base en Usuarios.
             // 2. Creamos su extensión en Clientes.
@@ -492,9 +502,12 @@ namespace Gestor_Salon_Belleza.Controllers
                 Apellido = model.Apellido,
                 Email = model.Email,
                 Telefono = model.Telefono,
-                Password = passwordHasheada,
+                // La contraseña se transforma en hash antes de persistirse.
+                Password = string.Empty,
                 Id_Rol = (int)EnumRoles.Cliente
             };
+
+            nuevoUsuario.Password = HashearPassword(nuevoUsuario, model.Password);
 
             _context.Add(nuevoUsuario);
             _context.SaveChanges();
@@ -516,7 +529,7 @@ namespace Gestor_Salon_Belleza.Controllers
         }
 
 
-    /*===== REDIRECT =====*/
+        /*===== REDIRECT =====*/
 
         public IActionResult RedirectByRol()
         {
@@ -533,14 +546,14 @@ namespace Gestor_Salon_Belleza.Controllers
             {
 
                 case "Administrador":
-                    
+
                     return RedirectToAction("DashboardAdmin", "Admin");
                 case "Cliente":
-                    
+
                     return RedirectToAction("Index", "Home");
 
                 case "Profesional":
-                    
+
                     return RedirectToAction("Index", "Home");
                 default:
                     return View("Index", "Home");
@@ -548,6 +561,136 @@ namespace Gestor_Salon_Belleza.Controllers
 
         }
 
-       
-    }  
+        /*===== Recupero de contraseña =====*/
+        [HttpGet]
+        public IActionResult RecuperarPassword()
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RecuperarPassword(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                TempData["Error"] = "Ingresá tu correo electrónico para recuperar la contraseña.";
+                return View();
+            }
+
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (usuario == null)
+            {
+                TempData["Error"] = "No existe una cuenta registrada con ese correo.";
+                return View();
+            }
+
+            if (string.IsNullOrWhiteSpace(usuario.Password))
+            {
+                TempData["Error"] = "No es posible recuperar tu contraseña, te has logueado con Google.";
+                return View();
+            }
+
+            string nuevaPasswordTemporal = GenerarPasswordTemporal();
+
+            // El recupero también persiste hash para mantener el mismo estándar
+            // de seguridad que el registro y la edición de perfil.
+            usuario.Password = HashearPassword(usuario, nuevaPasswordTemporal);
+
+            await _context.SaveChangesAsync();
+
+            string cuerpoHtml = $"""
+                <h2>Recuperación de contraseña</h2>
+
+                <p>Hola {usuario.Nombre},</p>
+
+                <p>Se generó una nueva contraseña temporal para tu cuenta de Glow & Style.</p>
+
+                <p><strong>Nueva contraseña temporal:</strong> {nuevaPasswordTemporal}</p>
+
+                <p>Te recomendamos iniciar sesión y cambiarla lo antes posible.</p>
+            """;
+
+            await _emailService.EnviarCorreoAsync(
+                destinatario: usuario.Email,
+                asunto: "Recuperación de contraseña - Glow & Style",
+                cuerpoHtml: cuerpoHtml
+            );
+
+            TempData["Exito"] = "Te enviamos una nueva contraseña temporal a tu correo.";
+
+            return RedirectToAction(nameof(Login));
+        }
+        private static string GenerarPasswordTemporal()
+        {
+            const string mayusculas = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+            const string minusculas = "abcdefghijkmnopqrstuvwxyz";
+            const string numeros = "23456789";
+            const string especiales = "!@$?";
+
+            string caracteres = mayusculas + minusculas + numeros + especiales;
+
+            char[] password = new char[10];
+
+            password[0] = mayusculas[RandomNumberGenerator.GetInt32(mayusculas.Length)];
+            password[1] = minusculas[RandomNumberGenerator.GetInt32(minusculas.Length)];
+            password[2] = numeros[RandomNumberGenerator.GetInt32(numeros.Length)];
+            password[3] = especiales[RandomNumberGenerator.GetInt32(especiales.Length)];
+
+            for (int i = 4; i < password.Length; i++)
+            {
+                password[i] = caracteres[RandomNumberGenerator.GetInt32(caracteres.Length)];
+            }
+
+            return new string(
+                password
+                    .OrderBy(_ => RandomNumberGenerator.GetInt32(1000))
+                    .ToArray()
+            );
+        }
+
+        private static string HashearPassword(Usuario usuario, string passwordPlano)
+        {
+            var hasher = new PasswordHasher<Usuario>();
+            return hasher.HashPassword(usuario, passwordPlano);
+        }
+
+        private void ValidarCambioPasswordPerfil(ProfileViewModel model)
+        {
+            bool quiereCambiarPassword =
+                !string.IsNullOrWhiteSpace(model.NuevaPassword) ||
+                !string.IsNullOrWhiteSpace(model.ConfirmarNuevaPassword);
+
+            // Si no tocó los campos de contraseña, dejamos pasar el update normal del perfil.
+            if (!quiereCambiarPassword)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(model.NuevaPassword))
+            {
+                ModelState.AddModelError(nameof(model.NuevaPassword), "Ingresá la nueva contraseña.");
+            }
+            else if (model.NuevaPassword.Length < 8)
+            {
+                ModelState.AddModelError(nameof(model.NuevaPassword), "La contraseña debe tener al menos 8 caracteres.");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.ConfirmarNuevaPassword))
+            {
+                ModelState.AddModelError(nameof(model.ConfirmarNuevaPassword), "Confirmá la nueva contraseña.");
+            }
+            else if (model.NuevaPassword != model.ConfirmarNuevaPassword)
+            {
+                ModelState.AddModelError(nameof(model.ConfirmarNuevaPassword), "Las contraseñas no coinciden.");
+            }
+        }
+    }
 }

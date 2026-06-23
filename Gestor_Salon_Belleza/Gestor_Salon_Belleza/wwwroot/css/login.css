@@ -213,3 +213,23 @@ a:visited {
         margin: 0;
         padding: 0;
     }
+
+
+
+
+.forgot-password-link {
+    text-align: right;
+    margin-top: -6px;
+    margin-bottom: 25px;
+}
+
+    .forgot-password-link a {
+        color: #b58376;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+        .forgot-password-link a:hover {
+            text-decoration: underline;
+        }

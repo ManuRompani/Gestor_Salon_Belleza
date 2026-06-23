@@ -11,7 +11,7 @@
             <div class="profile-header">
                 <p class="profile-eyebrow">AREA PERSONAL</p>
                 <h1>Mi Perfil</h1>
-                <p class="profile-copy">Desde acá podés consultar tus datos, actualizarlos y cerrar tu sesión cuando lo necesites.</p>
+                <p class="profile-copy">Desde ac&aacute; pod&eacute;s consultar tus datos, actualizarlos y definir una nueva contrase&ntilde;a si lo necesit&aacute;s.</p>
             </div>
 
             @if (TempData["Exito"] != null)
@@ -27,6 +27,7 @@
                     <div asp-validation-summary="ModelOnly" class="profile-alert profile-alert-error"></div>
                 }
 
+                @* Estos campos actualizan la fila base de Usuarios. *@
                 <div class="profile-grid">
                     <div class="profile-field">
                         <label asp-for="Nombre">Nombre</label>
@@ -42,19 +43,42 @@
                 </div>
 
                 <div class="profile-field">
-                    <label asp-for="Email">Correo Electrónico</label>
+                    <label asp-for="Email">Correo electr&oacute;nico</label>
                     <input asp-for="Email" class="profile-input" readonly />
-                    <span class="profile-help">El correo pertenece a tu cuenta y no se modifica desde esta pantalla.</span>
+                    <span class="profile-help">El correo identifica la cuenta y no se modifica desde esta pantalla.</span>
                 </div>
 
                 <div class="profile-field">
-                    <label asp-for="Telefono">Teléfono</label>
+                    <label asp-for="Telefono">Tel&eacute;fono</label>
                     <input asp-for="Telefono" class="profile-input" />
                     <span asp-validation-for="Telefono" class="profile-validation"></span>
                 </div>
 
+                @* Este bloque no obliga a cambiar la contrase&ntilde;a:
+                   solo env&iacute;a datos si el usuario decide completar ambos inputs. *@
+                <div class="profile-divider"></div>
+
+                <div class="profile-header profile-password-header">
+                    <p class="profile-eyebrow">SEGURIDAD</p>
+                    <p class="profile-copy">Dej&aacute; estos campos vac&iacute;os si no quer&eacute;s modificar tu contrase&ntilde;a actual.</p>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="profile-field">
+                        <label asp-for="NuevaPassword">Nueva contrase&ntilde;a</label>
+                        <input asp-for="NuevaPassword" type="password" class="profile-input" placeholder="Minimo 8 caracteres" />
+                        <span asp-validation-for="NuevaPassword" class="profile-validation"></span>
+                    </div>
+
+                    <div class="profile-field">
+                        <label asp-for="ConfirmarNuevaPassword">Confirmar nueva contrase&ntilde;a</label>
+                        <input asp-for="ConfirmarNuevaPassword" type="password" class="profile-input" placeholder="Repetir nueva contrase&ntilde;a" />
+                        <span asp-validation-for="ConfirmarNuevaPassword" class="profile-validation"></span>
+                    </div>
+                </div>
+
                 <div class="profile-actions">
-                    <button type="submit" class="btn btn-primary profile-save">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-primary profile-save">Guardar cambios</button>
                 </div>
             </form>
 
@@ -62,7 +86,7 @@
 
             <form asp-action="Logout" asp-controller="Account" method="post" class="profile-logout">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-secondary profile-logout-btn">Cerrar Sesión</button>
+                <button type="submit" class="btn btn-secondary profile-logout-btn">Cerrar sesi&oacute;n</button>
             </form>
         </div>
     </section>

@@ -3,6 +3,7 @@ using Gestor_Salon_Belleza.Models;
 using Gestor_Salon_Belleza.Utils.Enumerables;
 using Gestor_Salon_Belleza.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -111,10 +112,14 @@ namespace Gestor_Salon_Belleza.Controllers
                     Apellido = model.Apellido.Trim(),
                     Email = model.Email.Trim(),
                     Telefono = model.Telefono,
-                    Password = model.Password,
+                    // El profesional se guarda con hash para que el login compare
+                    // contra un valor seguro y no contra texto plano.
+                    Password = string.Empty,
                     Id_Rol = (int)EnumRoles.Profesional,
                     Eliminado = false
                 };
+
+                usuario.Password = HashearPassword(usuario, model.Password!);
 
                 _context.Usuarios.Add(usuario);
                 await _context.SaveChangesAsync();
@@ -713,7 +718,9 @@ namespace Gestor_Salon_Belleza.Controllers
 
                 if (!string.IsNullOrWhiteSpace(model.Password))
                 {
-                    profesional.Usuario.Password = model.Password;
+                    // En edición solo reemplazamos la contraseña si el formulario trae
+                    // un nuevo valor. Antes de guardar lo convertimos a hash.
+                    profesional.Usuario.Password = HashearPassword(profesional.Usuario, model.Password);
                 }
 
                 if (model.ImagenArchivo != null && model.ImagenArchivo.Length > 0)
@@ -829,6 +836,12 @@ namespace Gestor_Salon_Belleza.Controllers
         {
             return _webHostEnvironment.WebRootPath
                 ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        }
+
+        private static string HashearPassword(Usuario usuario, string passwordPlano)
+        {
+            var hasher = new PasswordHasher<Usuario>();
+            return hasher.HashPassword(usuario, passwordPlano);
         }
     }
 }

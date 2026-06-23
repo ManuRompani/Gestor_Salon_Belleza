@@ -38,6 +38,10 @@
     margin-bottom: 28px;
 }
 
+.profile-password-header .profile-copy {
+    margin-bottom: 0;
+}
+
 .profile-form {
     display: flex;
     flex-direction: column;

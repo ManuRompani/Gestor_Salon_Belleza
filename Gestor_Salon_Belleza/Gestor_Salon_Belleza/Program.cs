@@ -1,5 +1,6 @@
 using Gestor_Salon_Belleza.Data;
 using Gestor_Salon_Belleza.Models;
+using Gestor_Salon_Belleza.Services.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
@@ -75,6 +76,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Correo
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings")
+);
+builder.Services.AddTransient<EmailService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

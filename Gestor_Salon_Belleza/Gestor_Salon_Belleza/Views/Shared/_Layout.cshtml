@@ -74,7 +74,10 @@
 
         <nav class="nav-menu">
             <ul>
-                <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                @if (!(User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Profesional")))
+                {
+                    <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                }
                 @if (!(User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Profesional") || User.IsInRole("Administrador"))))
                 {
                     <li><a asp-controller="Home" asp-action="Services">Servicios</a></li>
@@ -96,7 +99,8 @@
 
                     else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Profesional"))
                     {
-                    <li><a asp-controller="Profesional" asp-action="MisTurnos" class="btn-nav btn-profile">Panel del profesional</a></li>
+                    <li><a asp-controller="Profesional" asp-action="MisTurnos" class="btn-nav">Panel del profesional</a></li>
+                    <li><a asp-controller="Profesional" asp-action="MiPerfil" class="btn-nav btn-profile">Mi Perfil</a></li>
                     }
 
                     else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Administrador"))

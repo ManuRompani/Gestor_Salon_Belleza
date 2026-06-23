@@ -258,7 +258,7 @@
             AgregarLink(
                 "Editar mi perfil",
                 "EditarMiPerfil",
-                "btn-primary-custom professional-button-link");
+                "professional-edit-as-button");
 
             AgregarLink(
                 "Dar de baja mi perfil",
@@ -377,6 +377,8 @@
                 </div>
             </div>
 
+            @* La contraseña viaja solo en modos de alta o edición.
+               Si se deja vacía durante una edición, el controller conserva el hash actual. *@
             @if (mostrarPassword)
             {
                 <div class="form-group">
