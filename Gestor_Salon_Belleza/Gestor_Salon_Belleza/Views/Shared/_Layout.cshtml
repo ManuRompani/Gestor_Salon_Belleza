@@ -8,7 +8,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />       
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
     <!-- MODULES ADMIN STYLES -->
     <link rel="stylesheet" href="~/css/admin/admin-professional.css" asp-append-version="true" />    
@@ -16,11 +16,8 @@
     <!-- no me eliminen esto culia-->
     <link rel="stylesheet" href="~/Gestor_Salon_Belleza.styles.css" asp-append-version="true" />
 
-    @RenderSection("DashboardServices", required: false)
-    @RenderSection("DashboardAdmin", required: false)
-    @RenderSection("Books", required: false)
-    @RenderSection("IndexServices", required: false)
-    @RenderSection("RegisterServices", required: false)
+
+    @RenderSection("Styles", required: false)
 
     <style>
         .cancel-link {
@@ -38,16 +35,19 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .cancel-link:hover {
-            background: #fff5f5;
-            border-color: #c0392b;
-            box-shadow: 0 4px 12px rgba(192,57,43,0.12);
-        }
-        .cancel-link::before {
-            content: "✕";
-            font-size: 1rem;
-            line-height: 1;
-        }
+
+            .cancel-link:hover {
+                background: #fff5f5;
+                border-color: #c0392b;
+                box-shadow: 0 4px 12px rgba(192,57,43,0.12);
+            }
+
+            .cancel-link::before {
+                content: "✕";
+                font-size: 1rem;
+                line-height: 1;
+            }
+
         .cancel-row {
             text-align: center;
             margin-top: 40px;
@@ -80,34 +80,35 @@
                     <li><a asp-controller="Home" asp-action="Services">Servicios</a></li>
                     <li><a asp-controller="Home" asp-action="Specialists">Especialistas</a></li>
                 }
-                <li>
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
+                {
+                    
+                    <li><a asp-controller="Books" asp-action="MyAppointments" class="btn-nav">Mis Turnos</a></li>
+                }
+
+                <!--BOTON PERFILES-->
+                
                     @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
                     {
-                        <a asp-controller="Books" asp-action="MyAppointments" class="btn-nav">Mis Turnos</a>
+                    <li><a asp-controller="Account" asp-action="Profile" class="btn-nav btn-profile">Mi Perfil</a></li>
                     }
+
                     else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Profesional"))
                     {
-                        <a asp-controller="Profesional" asp-action="MisTurnos" class="btn-nav">Mis Turnos</a>
+                    <li><a asp-controller="Profesional" asp-action="MisTurnos" class="btn-nav btn-profile">Panel del profesional</a></li>
                     }
-                </li>
-                <li>
-                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
-                    {
-                        <a asp-controller="Account" asp-action="Profile" class="btn-nav btn-profile">Mi Perfil</a>
-                    }
-                    else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Profesional"))
-                    {
-                        <a asp-controller="Profesional" asp-action="MiPerfil" class="btn-nav btn-profile">Mi Perfil</a>
-                    }
+
                     else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
                     {
-                        <a asp-controller="Account" asp-action="RedirectByRol" class="btn-nav btn-profile">Panel General</a>
+                    <li><a asp-controller="Account" asp-action="RedirectByRol" class="btn-nav btn-profile">Panel General</a></li>
                     }
+
                     else
                     {
-                        <a asp-controller="Account" asp-action="Login" class="btn-nav btn-profile">Iniciar Sesión</a>
+                    <li><a asp-controller="Account" asp-action="Login" class="btn-nav btn-profile">Iniciar Sesión</a></li>
                     }
-                </li>
+                
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     <li>
