@@ -11,9 +11,17 @@
     <div class="services-header">
         <div>
             <h1>Profesionales</h1>
-            <p class="services-sub">Gestión del staff · Atelier de Belleza</p>
+            <p class="services-sub">Gesti&oacute;n del staff &middot; Atelier de Belleza</p>
         </div>
         <a asp-controller="Profesional" asp-action="Create" class="btn-agregar desktop-only">
+            + Agregar profesional
+        </a>
+    </div>
+
+    @* En mobile el botón desktop se oculta por CSS,
+       por eso renderizamos una segunda versión dentro del flujo responsive. *@
+    <div class="mobile-only professional-mobile-toolbar">
+        <a asp-controller="Profesional" asp-action="Create" class="btn-agregar professional-mobile-add-button">
             + Agregar profesional
         </a>
     </div>
@@ -25,7 +33,7 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Email</th>
-                    <th>Teléfono</th>
+                    <th>Tel&eacute;fono</th>
                     <th>Servicios</th>
                     <th>Acciones</th>
                 </tr>
@@ -73,8 +81,8 @@
                     </div>
                     <p class="service-card-desc">@profesional.Email</p>
                     <div class="service-card-meta">
-                        <span>📞 @profesional.Telefono</span>
-                        <span>✂️ @profesional.Servicios</span>
+                        <span>Telefono: @profesional.Telefono</span>
+                        <span>Servicios: @profesional.Servicios</span>
                     </div>
                     <div class="service-card-acciones">
                         <a asp-controller="Profesional"
@@ -84,6 +92,12 @@
                     </div>
                 </div>
             }
+        }
+        else
+        {
+            <div class="service-card professional-empty-card">
+                <p class="service-card-desc">No hay profesionales cargados.</p>
+            </div>
         }
     </div>
 

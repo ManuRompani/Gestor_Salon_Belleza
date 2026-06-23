@@ -3,6 +3,7 @@ using Gestor_Salon_Belleza.Models;
 using Gestor_Salon_Belleza.Services.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -108,6 +109,32 @@ using (var scope = app.Services.CreateScope())
         context.Roles.Add(new Rol { Rol_Name = "Administrador" });
         context.Roles.Add(new Rol { Rol_Name = "Cliente" });
         context.Roles.Add(new Rol { Rol_Name = "Profesional" });
+        context.SaveChanges();
+    }
+
+    // Si la tabla de usuarios todavía está vacía,
+    // dejamos creado un administrador inicial para poder entrar al sistema.
+    if (!context.Usuarios.Any())
+    {
+        var rolAdministrador = context.Roles.First(r => r.Rol_Name == "Administrador");
+
+        var adminInicial = new Usuario
+        {
+            Nombre = "Admin",
+            Apellido = "Inicial",
+            Email = "admin@glowstyle.com",
+            Telefono = null,
+            Password = string.Empty,
+            Id_Rol = rolAdministrador.Id_Rol,
+            Eliminado = false
+        };
+
+        // La contraseña del admin semilla también se persiste como hash,
+        // igual que en el registro manual y edición de perfiles.
+        var hasher = new PasswordHasher<Usuario>();
+        adminInicial.Password = hasher.HashPassword(adminInicial, "admin123");
+
+        context.Usuarios.Add(adminInicial);
         context.SaveChanges();
     }
 }

@@ -48,10 +48,20 @@
     white-space: nowrap;
 }
 
-    .btn-agregar:hover {
+.btn-agregar:hover {
         background-color: #b5838d;
         color: #ffffff;
     }
+
+.professional-mobile-toolbar {
+    margin: 0 0 1.25rem;
+}
+
+.professional-mobile-add-button {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+}
 
 /*===============================================*/
 /*               TABLE DE SERVICIOS              */
@@ -320,6 +330,10 @@
         padding: 40px 5% 80px;
     }
 
+    .services-header {
+        margin-bottom: 1rem;
+    }
+
     .services-header h1 {
         font-size: 1.8rem;
     }
@@ -330,7 +344,13 @@
 
     .mobile-only {
         display: flex;
+        flex-direction: column;
         gap: 1.5rem;
+    }
+
+    .service-card-meta {
+        flex-direction: column;
+        gap: 10px;
     }
 
     .btn-flotante {
