@@ -1,0 +1,52 @@
+@using Gestor_Salon_Belleza.ViewModels
+@model BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Seleccionar servicio - Glow & Style";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/books/select-professional.css" asp-append-version="true" />
+}
+
+<div class="turnos-wrapper">
+    <div class="turnos-hero">
+        <span class="subtitle">Paso 1 de 3</span>
+        <h1>Elegí un servicio con @Model.ProfessionalName</h1>
+        <p>Seleccione qué servicio te gustaría reservar</p>
+    </div>
+
+    <div class="especialistas-grid">
+        @if (Model.Professionals != null && Model.Professionals.Any())
+        {
+            foreach (var service in Model.Professionals)
+            {
+                <div class="especialista-card">
+                    <div class="especialista-info">
+                        <h2 class="especialista-nombre">@service.FullName</h2>
+                        @if (!string.IsNullOrEmpty(service.Description))
+                        {
+                            <p class="especialista-descripcion">@service.Description</p>
+                        }
+                        <p class="especialista-descripcion">Duración: @service.DurationMinutes min</p>
+                        <a asp-action="SelectSchedule"
+                           asp-route-serviceId="@service.Id"
+                           asp-route-professionalId="@Model.ProfessionalId"
+                           class="btn btn-primary btn-turno">
+                            Seleccionar
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="turnos-empty">
+                <p>Este profesional no tiene servicios disponibles.</p>
+                <a asp-controller="Home" asp-action="Specialists" class="btn btn-secondary">Volver a especialistas</a>
+            </div>
+        }
+    </div>
+
+    <div class="cancel-row">
+        <a asp-controller="Home" asp-action="Index" class="cancel-link">Cancelar</a>
+    </div>
+</div>

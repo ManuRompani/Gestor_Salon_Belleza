@@ -1,0 +1,122 @@
+﻿@model IEnumerable<Gestor_Salon_Belleza.ViewModels.ServicesViewModel>
+
+@{
+    ViewData["Title"] = "Gestión de Servicios";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/services/index-services.css" />
+}
+
+<div class="services-wrap">
+    <div class="services-header">
+        <div>
+            <h1>Servicios</h1>
+            <p class="services-sub">Catálogo y tarifas · Atelier de Belleza</p>
+        </div>
+        <a asp-controller="Services" asp-action="CreateServices" class="btn-agregar desktop-only">
+            + Agregar servicio
+        </a>
+    </div>
+
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert-exito">@TempData["Exito"]</div>
+    }
+
+    <div class="table-wrap desktop-only">
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Duración</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td class="td-nombre">@s.Nombre</td>
+                        <td class="td-desc">@s.Descripcion</td>
+                        <td>@s.Duracion min</td>
+                        <td>$@s.Precio.ToString("N2")</td>
+                        <td>
+                            <span class="badge @(s.Activo ? "badge-activo" : "badge-inactivo")">
+                                @(s.Activo ? "Activo" : "Inactivo")
+                            </span>
+                        </td>
+                        <td class="td-acciones">
+
+                            @if(s.Activo){
+                            <a asp-controller="Services" asp-action="EditServices" asp-route-id="@s.Id" class="btn-accion btn-editar">Editar</a>
+                            <form asp-controller="Services" asp-action="DeleteServices" asp-route-id="@s.Id" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-accion btn-baja" onclick="return confirm('¿Dar de baja este servicio?')">Baja</button>
+                            </form>
+                            }else{
+                            <form asp-controller="Services" asp-action="ActivateServices" asp-route-id="@s.Id" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-accion btn-alta" onclick="return confirm('¿Dar de alta este servicio?')">Alta</button>
+                            </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARDS MOBILE -->
+    <div class="cards-wrap mobile-only">
+        @foreach (var s in Model)
+        {
+            <div class="service-card">
+                <div class="service-card-header">
+                    <h3 class="service-card-nombre">@s.Nombre</h3>
+                    <span class="badge @(s.Activo ? "badge-activo" : "badge-inactivo")">
+                        @(s.Activo ? "Activo" : "Inactivo")
+                    </span>
+                </div>
+                @if (!string.IsNullOrEmpty(s.Descripcion))
+                {
+                    <p class="service-card-desc">@s.Descripcion</p>
+                }
+                <div class="service-card-meta">
+                    <span>⏱ @s.Duracion min</span>
+                    <span>$@s.Precio.ToString("N2")</span>
+                </div>
+                <div class="service-card-acciones">
+                    @if (s.Activo)
+                    {
+                        <a asp-controller="Services" asp-action="EditServices" asp-route-id="@s.Id" class="btn-accion btn-editar">Editar</a>
+                        <form asp-controller="Services" asp-action="DeleteServices" asp-route-id="@s.Id" method="post" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-accion btn-baja" onclick="return confirm('¿Dar de baja este servicio?')">Baja</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Services" asp-action="ActivateServices" asp-route-id="@s.Id" method="post" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-accion btn-alta" onclick="return confirm('¿Dar de alta este servicio?')">Alta</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <a asp-controller="Admin"
+       asp-action="DashboardAdmin"
+       class="back-link">
+        Volver al inicio
+    </a>
+    <!-- Botón flotante mobile -->
+    <a asp-controller="Services" asp-action="CreateServices" class="btn-flotante mobile-only" title="Agregar servicio">+</a>
+</div>
+

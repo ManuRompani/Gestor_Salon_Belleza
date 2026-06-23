@@ -1,0 +1,51 @@
+@model Turno
+@{
+    ViewData["Title"] = "Confirmación de reserva - Glow & Style";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/books/books-success.css" asp-append-version="true" />
+}
+
+<div class="turnos-wrapper">
+    <div class="success-card">
+        <div class="success-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"
+                 fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+        </div>
+        <h1>Reserva confirmada!</h1>
+        <p class="success-subtitle">Tu reserva se realizó correctamente.</p>
+
+        <div class="confirm-card">
+            <div class="confirm-details">
+                <div class="confirm-row">
+                    <span class="confirm-label">Servicio</span>
+                    <span class="confirm-value">@Model.TurnoServicios?.FirstOrDefault()?.Servicio?.Nombre</span>
+                </div>
+                <div class="confirm-row">
+                    <span class="confirm-label">Profesional</span>
+                    <span class="confirm-value">@Model.Profesional?.Usuario?.Nombre @Model.Profesional?.Usuario?.Apellido</span>
+                </div>
+                <div class="confirm-row">
+                    <span class="confirm-label">Fecha</span>
+                    <span class="confirm-value">@Model.FechaHora.ToString("dddd, MMMM dd, yyyy")</span>
+                </div>
+                <div class="confirm-row">
+                    <span class="confirm-label">Hora</span>
+                    <span class="confirm-value">@Model.FechaHora.ToString("HH:mm")</span>
+                </div>
+                <div class="confirm-row">
+                    <span class="confirm-label">Código</span>
+                    <span class="confirm-value">#@Model.Id_Turno</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="success-actions">
+            <a asp-action="MyAppointments" class="btn btn-primary">Mis turnos</a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Volver al inicio</a>
+        </div>
+    </div>
+</div>

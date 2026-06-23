@@ -1,0 +1,33 @@
+.success-card {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 56px 8% 70px;
+}
+
+.success-icon { margin-bottom: 24px; }
+
+.success-card h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.success-subtitle {
+    font-size: 0.94rem;
+    color: var(--text-color);
+    margin-bottom: 36px;
+}
+
+.success-card .confirm-card { text-align: left; margin-bottom: 36px; }
+
+.success-actions { display: flex; justify-content: center; gap: 16px; }
+
+@media (max-width: 768px) {
+    .success-card { padding: 40px 5% 60px; }
+    .success-card h1 { font-size: 1.8rem; }
+    .success-actions { flex-direction: column; }
+    .success-actions .btn { width: 100%; text-align: center; }
+}

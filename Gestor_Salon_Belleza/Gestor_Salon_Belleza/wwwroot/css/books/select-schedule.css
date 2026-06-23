@@ -1,0 +1,97 @@
+.schedule-selector {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.date-picker-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.date-picker-form label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.date-picker-form input[type="date"] {
+    padding: 12px 24px;
+    border: 2px solid #e8e0dd;
+    border-radius: 50px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: var(--text-dark);
+    background: var(--white);
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 260px;
+    text-align: center;
+}
+
+.date-picker-form input[type="date"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(181, 131, 141, 0.15);
+}
+
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+}
+
+.slot-card {
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: center;
+    transition: var(--transition);
+    cursor: default;
+}
+
+.slot-available {
+    background-color: var(--white);
+    border: 2px solid #e0f0e3;
+    color: #2d6a4f;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.slot-available:hover {
+    border-color: #2d6a4f;
+    background-color: #e8f5ec;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 106, 79, 0.15);
+}
+
+.slot-occupied {
+    background-color: #f8f0f0;
+    border: 2px solid #f0e0e0;
+    color: #c0a0a0;
+    text-decoration: line-through;
+}
+
+.schedule-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.schedule-actions .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .slots-grid { grid-template-columns: repeat(2, 1fr); }
+    .date-picker-form input[type="date"] { width: 100%; min-width: auto; }
+}

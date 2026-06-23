@@ -1,0 +1,52 @@
+﻿.register-card {
+    max-width: 520px;
+}
+
+/* Distribución en grilla para Nombre/Apellido y Email/Teléfono */
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
+/* Estilo sofisticado para los mensajes de error individuales debajo de cada input */
+.text-validation-error {
+    display: block;
+    font-size: 11px;
+    color: #b58376; /* El tono sofisticado rosa viejo/nude oscuro */
+    margin-top: 5px;
+    margin-left: 12px;
+    font-weight: 500;
+    text-align: left;
+}
+
+/* Diseño elegante para alertas globales (ModelState.AddModelError) */
+.auth-error-alert {
+    background-color: rgba(181, 131, 118, 0.08);
+    border: 1px solid #b58376;
+    color: var(--text-dark);
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+    .auth-error-alert ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+
+/* Ajuste responsivo: si la pantalla es chica, los campos se apilan uno abajo del otro */
+@media (max-width: 480px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}

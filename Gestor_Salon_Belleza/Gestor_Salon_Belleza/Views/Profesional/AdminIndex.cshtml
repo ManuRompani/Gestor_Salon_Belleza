@@ -1,0 +1,107 @@
+@model IEnumerable<Gestor_Salon_Belleza.ViewModels.ProfesionalListItemViewModel>
+@{
+    ViewData["Title"] = "Profesionales";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Services/index-services.css" />
+}
+
+<div class="services-wrap">
+    <div class="services-header">
+        <div>
+            <h1>Profesionales</h1>
+            <p class="services-sub">Gesti&oacute;n del staff &middot; Atelier de Belleza</p>
+        </div>
+        <a asp-controller="Profesional" asp-action="Create" class="btn-agregar desktop-only">
+            + Agregar profesional
+        </a>
+    </div>
+
+    @* En mobile el botón desktop se oculta por CSS,
+       por eso renderizamos una segunda versión dentro del flujo responsive. *@
+    <div class="mobile-only professional-mobile-toolbar">
+        <a asp-controller="Profesional" asp-action="Create" class="btn-agregar professional-mobile-add-button">
+            + Agregar profesional
+        </a>
+    </div>
+
+    <!-- TABLA DESKTOP -->
+    <div class="table-wrap desktop-only">
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Tel&eacute;fono</th>
+                    <th>Servicios</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var profesional in Model)
+                    {
+                        <tr>
+                            <td class="td-nombre">@profesional.NombreCompleto</td>
+                            <td class="td-desc">@profesional.Email</td>
+                            <td>@profesional.Telefono</td>
+                            <td>@profesional.Servicios</td>
+                            <td class="td-acciones">
+                                <a asp-controller="Profesional"
+                                   asp-action="Details"
+                                   asp-route-id="@profesional.Id_Usuario"
+                                   class="btn-accion btn-editar">Ver</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" style="padding:20px;text-align:center;color:#a29791;">
+                            No hay profesionales cargados.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARDS MOBILE -->
+    <div class="cards-wrap mobile-only">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var profesional in Model)
+            {
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <h3 class="service-card-nombre">@profesional.NombreCompleto</h3>
+                    </div>
+                    <p class="service-card-desc">@profesional.Email</p>
+                    <div class="service-card-meta">
+                        <span>Telefono: @profesional.Telefono</span>
+                        <span>Servicios: @profesional.Servicios</span>
+                    </div>
+                    <div class="service-card-acciones">
+                        <a asp-controller="Profesional"
+                           asp-action="Details"
+                           asp-route-id="@profesional.Id_Usuario"
+                           class="btn-accion btn-editar">Ver</a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="service-card professional-empty-card">
+                <p class="service-card-desc">No hay profesionales cargados.</p>
+            </div>
+        }
+    </div>
+
+    <a asp-controller="Admin" asp-action="DashboardAdmin" class="back-link">
+        Volver al inicio
+    </a>
+</div>

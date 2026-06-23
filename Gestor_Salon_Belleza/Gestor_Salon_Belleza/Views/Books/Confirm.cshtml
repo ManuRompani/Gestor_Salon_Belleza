@@ -1,0 +1,60 @@
+@using Gestor_Salon_Belleza.ViewModels
+@model BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Confirmar reserva - Glow & Style";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/books/books-confirm.css" asp-append-version="true" />
+}
+
+<div class="turnos-wrapper">
+    <div class="turnos-hero">
+        <span class="subtitle">Paso 3 de 3</span>
+        <h1>Confirma la reserva</h1>
+    </div>
+
+    <div class="confirm-card">
+        <div class="confirm-details">
+            <div class="confirm-row">
+                <span class="confirm-label">Servicio</span>
+                <span class="confirm-value">@Model.ServiceName</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">Profesional</span>
+                <span class="confirm-value">@Model.ProfessionalName</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">Fecha</span>
+                <span class="confirm-value">@Model.PreferredDate?.ToString("dddd, MMMM dd, yyyy")</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">Hora</span>
+                <span class="confirm-value">@Model.PreferredTime</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">Duración</span>
+                <span class="confirm-value">@Model.DurationMinutes minutos</span>
+            </div>
+            <div class="confirm-row">
+                <span class="confirm-label">Precio</span>
+                <span class="confirm-value confirm-price">$@Model.Precio.ToString("N0")</span>
+            </div>
+        </div>
+
+        <form asp-action="Create" method="post" class="confirm-form">
+            <input type="hidden" name="serviceId" value="@Model.ServiceId" />
+            <input type="hidden" name="professionalId" value="@Model.ProfessionalId" />
+            <input type="hidden" name="preferredDate" value="@Model.PreferredDate?.ToString("o")" />
+            <input type="hidden" name="preferredTime" value="@Model.PreferredTime" />
+
+            <div class="confirm-actions">
+                <a asp-action="SelectSchedule"
+                   asp-route-serviceId="@Model.ServiceId"
+                   asp-route-professionalId="@Model.ProfessionalId"
+                   class="btn btn-secondary">Regresar</a>
+                <button type="submit" class="btn btn-primary">Confirmar y reservar</button>
+                <a asp-controller="Home" asp-action="Index" class="cancel-link">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

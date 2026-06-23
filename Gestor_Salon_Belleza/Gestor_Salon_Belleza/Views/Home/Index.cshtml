@@ -1,14 +1,24 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Glow & Style | Salón de Belleza";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Gestor Salon de Belleza</h1>
-    <p>Página principal de nuestro proyecto gestor de turnos
-        <br/>
-        • Manuel Rompani 
-        • Emiliano Acosta
-        • Yamila Holik
-        •
-    </p>
-</div>
+<main class="main-content">
+    <section class="hero-section">
+        <div class="hero-info">
+            <span class="subtitle">Experiencia Premium</span>
+            <h1>Tu belleza, nuestra pasión</h1>
+            <p>Descubre un espacio diseñado exclusivamente para tu bienestar y estilo. En <strong>Glow &amp; Style</strong> combinamos técnicas de vanguardia, productos de alta gama y un equipo de profesionales apasionados para resaltar tu verdadera esencia.</p>
+
+            <div class="cta-container">
+                @if (!(User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Profesional") || User.IsInRole("Administrador"))))
+                {
+                    <a asp-controller="Home" asp-action="Services" class="btn btn-primary">Reservar Cita</a>
+                }
+                @if (!(User.Identity != null && User.Identity.IsAuthenticated))
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-secondary">Registrarse</a>
+                }
+            </div>
+        </div>
+    </section>
+</main>

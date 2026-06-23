@@ -1,0 +1,25 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=GestorSalonBelleza;Trusted_Connection=True;MultipleActiveResultSets=true"
+  },
+  "GoogleKeys": {
+    "ClientId": "TU_GOOGLE_CLIENT_ID",
+    "ClientSecret": "TU_GOOGLE_CLIENT_SECRET"
+  },
+  "SmtpSettings": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "UseStartTls": true,
+    "UserName": "tu-correo@gmail.com",
+    "Password": "tu-app-password-o-clave-smtp",
+    "FromEmail": "tu-correo@gmail.com",
+    "FromName": "Glow & Style"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

@@ -1,48 +1,141 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Gestor_Salon_Belleza</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"]</title>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- MODULES ADMIN STYLES -->
+    <link rel="stylesheet" href="~/css/admin/admin-professional.css" asp-append-version="true" />    
+    
+    <!-- no me eliminen esto culia-->
     <link rel="stylesheet" href="~/Gestor_Salon_Belleza.styles.css" asp-append-version="true" />
+
+
+    @RenderSection("Styles", required: false)
+
+    <style>
+        .cancel-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #c0392b;
+            font-size: 0.94rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            padding: 16px 36px;
+            border: 2px solid #e8c0c0;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .cancel-link:hover {
+                background: #fff5f5;
+                border-color: #c0392b;
+                box-shadow: 0 4px 12px rgba(192,57,43,0.12);
+            }
+
+            .cancel-link::before {
+                content: "✕";
+                font-size: 1rem;
+                line-height: 1;
+            }
+
+        .cancel-row {
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+
+
+
+
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Gestor_Salon_Belleza</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+    <header class="header">
+        <div class="logo">
+            <a asp-controller="Home" asp-action="Index">Glow &amp; Style</a>
+        </div>
+
+        <input type="checkbox" id="menu-toggle" class="menu-checkbox">
+
+        <label for="menu-toggle" class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
+        <nav class="nav-menu">
+            <ul>
+                @if (!(User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Profesional")))
+                {
+                    <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                }
+                @if (!(User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Profesional") || User.IsInRole("Administrador"))))
+                {
+                    <li><a asp-controller="Home" asp-action="Services">Servicios</a></li>
+                    <li><a asp-controller="Home" asp-action="Specialists">Especialistas</a></li>
+                }
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
+                {
+                    
+                    <li><a asp-controller="Books" asp-action="MyAppointments" class="btn-nav">Mis Turnos</a></li>
+                }
+
+                <!--BOTON PERFILES-->
+                
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Cliente"))
+                    {
+                    <li><a asp-controller="Account" asp-action="Profile" class="btn-nav btn-profile">Mi Perfil</a></li>
+                    }
+
+                    else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Profesional"))
+                    {
+                    <li><a asp-controller="Profesional" asp-action="MisTurnos" class="btn-nav">Panel del profesional</a></li>
+                    <li><a asp-controller="Profesional" asp-action="MiPerfil" class="btn-nav btn-profile">Mi Perfil</a></li>
+                    }
+
+                    else if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+                    {
+                    <li><a asp-controller="Account" asp-action="RedirectByRol" class="btn-nav btn-profile">Panel General</a></li>
+                    }
+
+                    else
+                    {
+                    <li><a asp-controller="Account" asp-action="Login" class="btn-nav btn-profile">Iniciar Sesión</a></li>
+                    }
+                
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <li>
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="btn-nav btn-logout">Cerrar sesi&oacute;n</button>
+                        </form>
+                    </li>
+                }
+            </ul>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Gestor_Salon_Belleza - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <main class="page-content">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Glow &amp; Style. Todos los derechos reservados.</p>
+            <p>Buenos Aires, Argentina | Tel: +54 11 2345-6789</p>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

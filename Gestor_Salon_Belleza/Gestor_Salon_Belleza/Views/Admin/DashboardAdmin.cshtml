@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Panel de Control - Administrador";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/dashboard-admin.css" />
+}
+
+<div class="dash-services-page">
+<div class="dash-wrap">
+    <div class="dash-header">
+        <p class="admin-subtitle">GESTIÓN INTERNA</p>
+        <h1 class="admin-title">Panel de control</h1>    
+        <p class="admin-intro">
+            Administra los servicios y profesionales de tu salón.
+        </p>
+    </div>
+
+
+
+<div class="container-card">
+
+    <div class="card">
+        <div>
+            <h2>Servicios</h2>
+            <p class="dash-desc">Administrá altas, bajas lógicas, modificaciones de precios y tiempos estimados de los tratamientos del salón.</p>
+        </div>
+
+        <div>
+            <a asp-controller="Services"
+               asp-action="IndexServices"
+               class="btn btn-primary">Gestionar servicios</a>
+        </div>
+
+
+    </div>
+
+    <div class="card">
+        <div>
+            <h2>Profesionales</h2>
+            <p class="dash-desc">Administrá el equipo de estilistas, asigná sus especialidades de servicio y controlá sus horarios de atención.</p>
+        </div>
+
+        <div>
+            <a asp-controller="Profesional" asp-action="AdminIndex" class="btn btn-primary">Gestionar profesionales</a>
+        </div>
+
+
+    </div>
+
+            <div class="card">
+                <div>
+                    <h2>Usuarios</h2>
+                    <p class="dash-desc">Administrá los usuarios registrados, visualiza desde donde se registraron y cambia su rol.</p>
+                </div>
+
+                <div>
+                    <a asp-controller="Admin" asp-action="IndexUsuarios" class="btn btn-primary">Gestionar Usuarios</a>
+                </div>
+
+
+            </div>
+
+
+</div>
+
+</div>
+
+</div>

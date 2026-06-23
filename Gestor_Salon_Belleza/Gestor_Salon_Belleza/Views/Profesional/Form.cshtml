@@ -1,0 +1,522 @@
+@model Gestor_Salon_Belleza.ViewModels.ProfesionalViewModel
+
+@{
+    /*
+        Aca leo el modo que me manda el controller.
+
+        Esta misma vista la uso para varias pantallas:
+        - Create
+        - Details
+        - Edit
+        - Delete
+        - MiPerfil
+        - EditMiPerfil
+        - BajaMiPerfil
+
+        Si por algun motivo no viene ViewBag.Modo, asumo "Create"
+        para que la vista tenga un comportamiento por defecto.
+    */
+    string modo = (ViewBag.Modo as string ?? "Create").Trim();
+
+    /*
+        Aca identifico exactamente en que modo estoy.
+        Esto me ayuda a no repetir todo el tiempo comparaciones como:
+        modo == "Create"
+    */
+    bool esCreate = modo == "Create";
+    bool esDetails = modo == "Details";
+    bool esEdit = modo == "Edit";
+    bool esDelete = modo == "Delete";
+
+    /*
+        Estos modos son para cuando el profesional esta trabajando
+        sobre su propio perfil, no sobre otro profesional desde admin.
+    */
+    bool esMiPerfil = modo == "MiPerfil";
+    bool esEditMiPerfil = modo == "EditMiPerfil";
+    bool esBajaMiPerfil = modo == "BajaMiPerfil";
+
+    /*
+        Aca agrupo modos que se comportan parecido.
+
+        esBaja:
+        lo uso para saber si estoy en una pantalla de baja logica.
+
+        esEdicion:
+        lo uso para saber si estoy modificando datos.
+
+        esLectura:
+        lo uso para saber si solo estoy mostrando informacion.
+
+        soloLectura:
+        lo uso para deshabilitar los inputs cuando no quiero que el usuario edite.
+    */
+    bool esBaja = esDelete || esBajaMiPerfil;
+    bool esEdicion = esEdit || esEditMiPerfil;
+    bool esLectura = esDetails || esMiPerfil;
+    bool soloLectura = esLectura || esBaja;
+
+    /*
+        Muestro los campos de contrasenia solamente cuando creo o edito.
+        En detalle, baja o mi perfil normal no tiene sentido mostrarlos.
+    */
+    bool mostrarPassword = esCreate || esEdicion;
+
+    /*
+        La validacion de servicios en el front solo la necesito cuando
+        el usuario puede crear o editar.
+        Si esta viendo o dando de baja, no hace falta validar servicios.
+    */
+    bool validarServiciosFront = esCreate || esEdicion;
+
+    /*
+        Dejo estos valores como constantes para no repetir strings
+        y evitar errores de tipeo.
+    */
+    const string accionAdminIndex = "AdminIndex";
+    const string claseVolver = "back-link";
+
+    /*
+        Segun el modo, defino el titulo principal de la pantalla.
+        Este titulo despues lo muestro en el h2 de la vista.
+    */
+    string titulo = modo switch
+    {
+        "Create" => "Crear Profesional",
+        "Edit" => "Editar Profesional",
+        "Delete" => "Dar de baja Profesional",
+        "MiPerfil" => "Mi Perfil Profesional",
+        "EditMiPerfil" => "Editar Mi Perfil",
+        "BajaMiPerfil" => "Dar de baja Mi Perfil",
+        _ => "Detalle Profesional"
+    };
+
+    /*
+        Segun el modo, defino el subtitulo.
+        Algunos modos comparten el mismo subtitulo porque representan
+        una operacion parecida.
+    */
+    string subtitulo = modo switch
+    {
+        "Create" => "ALTA DE PROFESIONAL",
+        "Edit" or "EditMiPerfil" => "MODIFICACION DE DATOS",
+        "Delete" or "BajaMiPerfil" => "BAJA LOGICA",
+        "MiPerfil" => "PERFIL PROFESIONAL",
+        _ => "CONSULTA DE DATOS"
+    };
+
+    /*
+        Aca defino a que action del controller se va a enviar el formulario.
+
+        Ejemplo:
+        Si modo es "Create", el form hace POST a Profesional/Create.
+
+        En el caso de EditMiPerfil, el modo interno se llama asi,
+        pero la action real del controller se llama EditarMiPerfil.
+    */
+    string accionFormulario = modo switch
+    {
+        "Create" => "Create",
+        "Edit" => "Edit",
+        "Delete" => "Delete",
+        "EditMiPerfil" => "EditarMiPerfil",
+        "BajaMiPerfil" => "BajaMiPerfil",
+        _ => "Details"
+    };
+
+    /*
+        Si estoy en una pantalla de baja, preparo un texto de advertencia.
+        Si no estoy en baja, dejo null para no mostrar ninguna alerta.
+    */
+    string? textoAlertaBaja = modo switch
+    {
+        "Delete" => "Esta accion dara de baja al profesional de forma logica. No se eliminara fisicamente de la base de datos.",
+        "BajaMiPerfil" => "Esta accion dara de baja tu perfil profesional. Tu usuario quedara marcado como eliminado.",
+        _ => null
+    };
+
+    /*
+        En esta lista voy guardando las acciones que aparecen abajo del formulario.
+
+        Cada accion puede ser:
+        - un boton submit
+        - un link
+
+        La estructura que guardo es:
+        Tipo, Texto, Clase, Controller, Action y RouteValues.
+    */
+    var acciones = new List<(string Tipo, string Texto, string Clase, string Controller, string Action, object? RouteValues)>();
+
+    /*
+        Uso este metodo para agregar botones que envian el formulario.
+        Como es submit, no necesito controller ni action aca,
+        porque eso ya lo define el form con asp-action.
+    */
+    void AgregarSubmit(string texto, string clase)
+    {
+        acciones.Add(("submit", texto, clase, string.Empty, string.Empty, null));
+    }
+
+    /*
+        Uso este metodo para agregar links.
+        Por defecto apuntan al controller Profesional.
+        Si necesito pasar un id, lo mando en routeValues.
+    */
+    void AgregarLink(
+        string texto,
+        string action,
+        string clase,
+        object? routeValues = null,
+        string controller = "Profesional")
+    {
+        acciones.Add(("link", texto, clase, controller, action, routeValues));
+    }
+
+    /*
+        Atajo para agregar el link Volver.
+        Lo dejo separado porque lo uso en varios modos.
+    */
+    void AgregarVolver()
+    {
+        AgregarLink("Volver", accionAdminIndex, claseVolver);
+    }
+
+    /*
+        Atajo para agregar el link Cancelar.
+        Le paso la action a la que quiero volver.
+        Si hace falta, tambien le paso el id.
+    */
+    void AgregarCancelar(string action, object? routeValues = null)
+    {
+        AgregarLink("Cancelar", action, claseVolver, routeValues);
+    }
+
+    /*
+        Aca armo los botones finales segun el modo actual.
+        La idea es que cada pantalla muestre solamente las acciones que corresponden.
+    */
+    switch (modo)
+    {
+        case "Create":
+            /*
+                En creacion necesito:
+                - crear el profesional
+                - volver al listado
+            */
+            AgregarSubmit("Crear profesional", "btn-primary-custom");
+            AgregarVolver();
+            break;
+
+        case "Details":
+            /*
+                En detalle no guardo nada.
+                Solo doy opciones para editar, dar de baja o volver.
+
+                Como Edit y Delete necesitan saber sobre que profesional trabajan,
+                les paso el Id_Usuario por ruta.
+            */
+            AgregarLink(
+                "Editar profesional",
+                "Edit",
+                "professional-edit-as-button",
+                new { id = Model.Id_Usuario });
+
+            AgregarLink(
+                "Dar de baja",
+                "Delete",
+                "btn-google professional-danger-link",
+                new { id = Model.Id_Usuario });
+
+            AgregarVolver();
+            break;
+
+        case "Edit":
+            /*
+                En edicion necesito:
+                - guardar cambios
+                - cancelar y volver al detalle del profesional
+            */
+            AgregarSubmit("Guardar cambios", "btn-primary-custom");
+            AgregarCancelar("Details", new { id = Model.Id_Usuario });
+            break;
+
+        case "Delete":
+            /*
+                En baja logica no edito datos.
+                Solo confirmo la baja o cancelo.
+            */
+            AgregarSubmit("Confirmar baja", "btn-primary-custom professional-delete-button");
+            AgregarCancelar("Details", new { id = Model.Id_Usuario });
+            break;
+
+        case "MiPerfil":
+            /*
+                En mi perfil no paso id por URL.
+                El controller deberia obtener el usuario logueado
+                desde claims o sesion.
+            */
+            AgregarLink(
+                "Editar mi perfil",
+                "EditarMiPerfil",
+                "professional-edit-as-button");
+
+            AgregarLink(
+                "Dar de baja mi perfil",
+                "BajaMiPerfil",
+                "btn-google professional-danger-link");
+
+            AgregarVolver();
+            break;
+
+        case "EditMiPerfil":
+            /*
+                Cuando edito mi propio perfil, puedo guardar cambios
+                o cancelar para volver a MiPerfil.
+            */
+            AgregarSubmit("Guardar cambios", "btn-primary-custom");
+            AgregarCancelar("MiPerfil");
+            break;
+
+        case "BajaMiPerfil":
+            /*
+                Cuando doy de baja mi propio perfil,
+                solo confirmo la baja o cancelo.
+            */
+            AgregarSubmit("Confirmar baja de mi perfil", "btn-primary-custom professional-delete-button");
+            AgregarCancelar("MiPerfil");
+            break;
+    }
+
+    /*
+        Este titulo lo usa el layout para la pestania del navegador.
+    */
+    ViewData["Title"] = titulo;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/register.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/professional.css" asp-append-version="true" />
+
+<section class="auth-container professional-shell">
+    <div class="auth-card register-card professional-form-card">
+        <p class="auth-subtitle">@subtitulo</p>
+        <h2 class="auth-title">@titulo</h2>
+
+        @if (!string.IsNullOrWhiteSpace(textoAlertaBaja))
+        {
+            <div class="auth-error-alert professional-soft-alert">
+                @textoAlertaBaja
+            </div>
+        }
+
+        <form asp-controller="Profesional"
+              asp-action="@accionFormulario"
+              method="post"
+              enctype="multipart/form-data"
+              class="auth-form professional-form-layout"
+              id="profesionalForm"
+              data-validar-servicios="@(validarServiciosFront ? "true" : "false")"
+              data-usar-recorte="@(esCreate || esEdicion ? "true" : "false")">
+
+            @Html.AntiForgeryToken()
+
+            @if (!esCreate && Model.Id_Usuario != null)
+            {
+                <input type="hidden" asp-for="Id_Usuario" />
+            }
+
+            <input type="hidden" asp-for="UrlImagen" />
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="ModelOnly" class="auth-error-alert"></div>
+            }
+
+            <h3 class="professional-section-heading">Datos del usuario</h3>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Nombre">Nombre</label>
+                    <input asp-for="Nombre"
+                           class="form-control"
+                           placeholder="Nombre del profesional"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Nombre" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Apellido">Apellido</label>
+                    <input asp-for="Apellido"
+                           class="form-control"
+                           placeholder="Apellido del profesional"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Apellido" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Email">Correo Electrónico</label>
+                    <input asp-for="Email"
+                           type="email"
+                           class="form-control"
+                           placeholder="ejemplo@correo.com"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Email" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Telefono">Teléfono</label>
+                    <input asp-for="Telefono"
+                           type="tel"
+                           class="form-control"
+                           placeholder="11 2345-6789"
+                           disabled="@soloLectura" />
+                    <span asp-validation-for="Telefono" class="text-validation-error"></span>
+                </div>
+            </div>
+
+            @* La contraseña viaja solo en modos de alta o edición.
+               Si se deja vacía durante una edición, el controller conserva el hash actual. *@
+            @if (mostrarPassword)
+            {
+                <div class="form-group">
+                    <label asp-for="Password">@(esCreate ? "Contraseña" : "Nueva Contraseña")</label>
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control"
+                           placeholder="@(esCreate ? "Mínimo 8 caracteres" : "Dejar vacío para no modificar")"
+                           required="@esCreate"
+                           minlength="8"
+                           data-msg-required="La contraseña es obligatoria."
+                           data-msg-minlength="La contraseña debe tener al menos 8 caracteres." />
+                    <span asp-validation-for="Password" class="text-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmarPassword">@(esCreate ? "Confirmar Contraseña" : "Confirmar Nueva Contraseña")</label>
+                    <input asp-for="ConfirmarPassword"
+                           type="password"
+                           class="form-control"
+                           placeholder="@(esCreate ? "Repetir contraseña" : "Repetir nueva contraseña")"
+                           required="@esCreate"
+                           data-msg-required="Debe confirmar la contraseña." />
+                    <span asp-validation-for="ConfirmarPassword" class="text-validation-error"></span>
+                </div>
+            }
+
+            <h3 class="professional-section-heading">Datos profesionales</h3>
+
+            <div class="form-group">
+                <label asp-for="ImagenArchivo">Imagen</label>
+
+                @if (!string.IsNullOrWhiteSpace(Model.UrlImagen))
+                {
+                    <div class="professional-current-image-box">
+                        <img src="@Model.UrlImagen"
+                             alt="Imagen del profesional"
+                             class="professional-current-image" />
+                    </div>
+                }
+
+                @if (!soloLectura)
+                {
+                    <input asp-for="ImagenArchivo"
+                           type="file"
+                           accept=".jpg,.jpeg,.png,.webp"
+                           class="form-control" />
+
+                    <small class="professional-help-text">
+                        Formatos permitidos: JPG, JPEG, PNG o WEBP. Tamaño máximo: 2 MB.
+                    </small>
+                }
+
+                <span asp-validation-for="ImagenArchivo" class="text-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Descripcion">Descripción</label>
+                <textarea asp-for="Descripcion"
+                          class="form-control professional-textarea-input"
+                          placeholder="Descripción profesional, experiencia o especialidad"
+                          disabled="@soloLectura"></textarea>
+                <span asp-validation-for="Descripcion" class="text-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Servicios que ofrece</label>
+
+                <div class="professional-services-panel">
+                    @if (Model.ServiciosDisponibles?.Any() == true)
+                    {
+                        foreach (var servicio in Model.ServiciosDisponibles)
+                        {
+                            bool idValido = int.TryParse(servicio.Value, out int servicioId);
+                            bool seleccionado = idValido &&
+                            (Model.IdsServiciosSeleccionados?.Contains(servicioId) ?? false);
+
+                            <label class="professional-service-chip">
+                                <input type="checkbox"
+                                       name="IdsServiciosSeleccionados"
+                                       value="@servicio.Value"
+                                       checked="@seleccionado"
+                                       disabled="@soloLectura" />
+                                <span>@servicio.Text</span>
+                            </label>
+                        }
+                    }
+                    else
+                    {
+                        <p class="professional-empty-copy">No hay servicios cargados.</p>
+                    }
+                </div>
+
+                <span asp-validation-for="IdsServiciosSeleccionados" class="text-validation-error"></span>
+                <span id="serviciosFrontError" class="text-validation-error"></span>
+            </div>
+
+            <div class="professional-actions">
+                @foreach (var accion in acciones)
+                {
+                    if (accion.Tipo == "submit")
+                    {
+                        <button type="submit" class="@accion.Clase">
+                            @accion.Texto
+                        </button>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action(accion.Action, accion.Controller, accion.RouteValues)"
+                           class="@accion.Clase">
+                            @accion.Texto
+                        </a>
+                    }
+                }
+            </div>
+        </form>
+    </div>
+
+    <div id="cropModal" class="crop-modal" style="display:none;">
+        <div class="crop-modal-content">
+            <h3 class="crop-modal-title">Ajustar imagen</h3>
+            <div class="crop-img-container">
+                <img id="cropImage" src="" alt="Imagen a recortar" />
+            </div>
+            <div class="crop-modal-actions">
+                <button type="button" id="cropConfirmBtn" class="btn-primary-custom">Aplicar recorte</button>
+                <button type="button" id="cropCancelBtn" class="btn-google">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="~/js/profesional-form.js" asp-append-version="true"></script>
+}

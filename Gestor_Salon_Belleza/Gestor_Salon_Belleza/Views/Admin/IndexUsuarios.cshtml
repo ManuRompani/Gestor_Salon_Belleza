@@ -1,0 +1,122 @@
+﻿@model IEnumerable<Gestor_Salon_Belleza.ViewModels.UsuarioAdminVM>
+
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Services/index-services.css" />
+    <link rel="stylesheet" href="~/css/Admin/index-usuarios.css" />
+}
+
+<div class="services-wrap">
+    <div class="services-header">
+        <div>
+            <h1>Usuarios</h1>
+            <p class="services-sub">Gestión de roles · Atelier de Belleza</p>
+        </div>
+    </div>
+
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert-exito">@TempData["Exito"]</div>
+    }
+
+    <!-- TABLA DESKTOP -->
+    <div class="table-wrap desktop-only">
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol actual</th>
+                    <th>Origen</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td class="td-nombre">@u.Nombre @u.Apellido</td>
+                        <td class="td-desc">@u.Email</td>
+                        <td>
+                            <span class="badge @(u.Rol == "Profesional" ? "badge-profesional" : "badge-cliente")">
+                                @u.Rol
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge @(u.TieneLoginExt ? "badge-google" : "badge-local")">
+                                @(u.TieneLoginExt ? "Google" : "Local")
+                            </span>
+                        </td>
+                        <td class="td-acciones">
+                            @if (u.Id_Rol == 2)
+                            {
+                                <form asp-controller="Admin" asp-action="ConvertToProfesional" asp-route-id="@u.Id_Usuario" method="post" style="display:inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-accion btn-hacer-profesional" onclick="return confirm('¿Asignar rol Profesional a @u.Nombre?')">Hacer Profesional</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-controller="Admin" asp-action="ConvertToCliente" asp-route-id="@u.Id_Usuario" method="post" style="display:inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-accion btn-hacer-cliente" onclick="return confirm('¿Asignar rol Cliente a @u.Nombre?')">Hacer Cliente</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>    
+       
+        
+        
+    </div>
+   
+
+    <!-- CARDS MOBILE -->
+    <div class="cards-wrap mobile-only">
+        @foreach (var u in Model)
+        {
+            <div class="service-card">
+                <div class="service-card-header">
+                    <h3 class="service-card-nombre">@u.Nombre @u.Apellido</h3>
+                    <span class="badge @(u.Rol == "Profesional" ? "badge-profesional" : "badge-cliente")">
+                        @u.Rol
+                    </span>
+                </div>
+                <p class="service-card-desc">@u.Email</p>
+                <div class="service-card-meta">
+                    <span>@(u.TieneLoginExt ? "🔵 Google" : "🔑 Local")</span>
+                </div>
+                <div class="service-card-acciones">
+                    @if (u.Id_Rol == 2)
+                    {
+                        <form asp-controller="Admin" asp-action="ConvertToProfesional" asp-route-id="@u.Id_Usuario" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-accion btn-hacer-profesional">Hacer Profesional</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Admin" asp-action="ConvertToCliente" asp-route-id="@u.Id_Usuario" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-accion btn-hacer-cliente">Hacer Cliente</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+        
+    </div>
+
+    <a asp-controller="Admin"
+       asp-action="DashboardAdmin"
+       class="back-link">
+        Volver al inicio
+    </a>
+</div>
+
+

@@ -1,0 +1,62 @@
+﻿@model Gestor_Salon_Belleza.Models.Servicio
+
+
+@{
+    ViewData["Title"] = "Glow & Style | ADMIN: Editar Servicios";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Services/services-register.css">
+}
+
+<section class="form-card">
+    <header class="form-header">
+        <p>EDICIÓN DE SERVICIO</p>
+        <h2>Editar Servicio</h2>
+    </header>
+
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert-exito">
+            @TempData["Exito"]
+        </div>
+    }
+    <form asp-action="EditServices" asp-controller="Services" method="post" class="beauty-form">
+
+        <input type="hidden" asp-for="Id_Servicio" />
+
+        <div class="form-group">
+            <label asp-for="Nombre">Nombre del Servicio</label>
+            <input asp-for="Nombre" type="text" id="nombre" name="Nombre" placeholder="Ej: Corte Bob, Balayage, Manicuría Rusa..." required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <label asp-for="Precio">Precio ($)</label>
+                <input asp-for="Precio" type="number" id="precio" name="Precio" min="0" step="0.01" placeholder="0.00" required>
+            </div>
+
+            <div class="form-group col">
+                <label asp-for="Duracion_Minutos">Duración (minutos)</label>
+                <input asp-for="Duracion_Minutos" type="number" id="duracion" name="Duracion" min="5" step="5" placeholder="Ej: 60" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Descripcion">Descripción (Opcional)</label>
+            <textarea asp-for="Descripcion" id="descripcion" name="Descripcion" rows="4" placeholder="Detalle del servicio, productos utilizados, etc..."></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar Servicio</button>
+        </div>
+
+
+
+    </form>
+</section>
+
+<a asp-controller="Services"
+   asp-action="IndexServices"
+   class="back-link">
+    Volver a servicios
+</a>

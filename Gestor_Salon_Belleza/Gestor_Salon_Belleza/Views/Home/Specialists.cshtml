@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Gestor_Salon_Belleza.Models.Profesional>
+
+@{
+    ViewData["Title"] = "Glow & Style | Especialistas";
+}
+
+<div class="especialistas-wrapper">
+
+    <div class="especialistas-hero">
+        <span class="subtitle">Nuestro equipo</span>
+        <h1>Conocé a los especialistas</h1>
+        <p>Profesionales apasionados por su trabajo, listos para resaltar tu mejor versión.</p>
+    </div>
+
+    <div class="especialistas-grid">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var profesional in Model)
+            {
+                <div class="especialista-card">
+                    <div class="especialista-imagen">
+                        @if (!string.IsNullOrEmpty(profesional.UrlImagen))
+                        {
+                            <img src="@profesional.UrlImagen"
+                                 alt="Foto de @profesional.Usuario.Nombre"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                        }
+                        <div class="especialista-iniciales"
+                             style="@(!string.IsNullOrEmpty(profesional.UrlImagen) ? "display:none;" : "")">
+                            @profesional.Usuario.Nombre[0]@profesional.Usuario.Apellido[0]
+                        </div>
+                    </div>
+                    <div class="especialista-info">
+                        <h2 class="especialista-nombre">
+                            @profesional.Usuario.Nombre @profesional.Usuario.Apellido
+                        </h2>
+                        @if (!string.IsNullOrEmpty(profesional.Descripcion))
+                        {
+                            <p class="especialista-descripcion">@profesional.Descripcion</p>
+                        }
+                        @if (profesional.Profesional_Servicios != null && profesional.Profesional_Servicios.Any())
+                        {
+                            <div class="especialista-servicios">
+                                @foreach (var ps in profesional.Profesional_Servicios.Take(3))
+                                {
+                                    <span class="servicio-tag">@ps.Servicio.Nombre</span>
+                                }
+                                @if (profesional.Profesional_Servicios.Count() > 3)
+                                {
+                                    <span class="servicio-tag servicio-tag-mas">
+                                        +@(profesional.Profesional_Servicios.Count() - 3) más
+                                    </span>
+                                }
+                            </div>
+                        }
+                        @if (!(User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Profesional") || User.IsInRole("Administrador"))))
+                        {
+                            <a asp-controller="Books" asp-action="SelectServiceForProfessional" asp-route-professionalId="@profesional.Id_Usuario" class="btn btn-primary btn-turno">
+                                Reservar turno
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="especialistas-empty">
+                <p>No hay especialistas disponibles en este momento.</p>
+            </div>
+        }
+    </div>
+
+</div>

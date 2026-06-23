@@ -1,0 +1,338 @@
+.filtros-container {
+    margin-bottom: 32px;
+}
+
+.filtros-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.filtros-tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.filter-tab {
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text-color);
+    border: 1.5px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+.filter-tab:hover {
+    border-color: #b5838d;
+    color: #b5838d;
+}
+
+.filter-tab.active {
+    background-color: #b5838d;
+    border-color: #b5838d;
+    color: #fff;
+}
+
+.filtros-fechas {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.filtros-fechas label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.filtros-fechas input[type="date"] {
+    padding: 8px 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    color: var(--text-dark);
+}
+
+.filtros-fechas input[type="date"]:focus {
+    outline: none;
+    border-color: #b5838d;
+}
+
+.btn-filtro {
+    padding: 8px 18px;
+    font-size: 0.85rem;
+    min-width: auto;
+}
+
+.turnos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.turno-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 28px;
+    box-shadow: 0 2px 12px rgba(47, 49, 77, 0.06);
+    border-left: 4px solid #b5838d;
+    transition: transform 0.2s;
+}
+
+.turno-card:hover {
+    transform: translateY(-2px);
+}
+
+.turno-card.turno-cancelado {
+    opacity: 0.6;
+    border-left-color: #c0a0a0;
+}
+
+.turno-fecha {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+}
+
+.turno-dia {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1;
+}
+
+.turno-mes {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #b5838d;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.turno-hora {
+    font-size: 0.8rem;
+    color: var(--text-color);
+    margin-top: 4px;
+}
+
+.turno-info {
+    flex: 1;
+}
+
+.turno-cliente {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0 0 4px;
+}
+
+.turno-servicio {
+    font-size: 0.88rem;
+    color: var(--text-color);
+    margin: 0 0 2px;
+}
+
+.turno-duracion {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.turno-estado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge {
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-activo {
+    background-color: #e8f5ec;
+    color: #2d6a4f;
+}
+
+.badge-cancelado {
+    background-color: #fbeaf0;
+    color: #b5838d;
+}
+
+.turno-cancelacion {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.turno-precio {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    min-width: 70px;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .turno-card {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .turno-fecha {
+        flex-direction: row;
+        gap: 8px;
+        min-width: auto;
+    }
+
+    .turno-dia {
+        font-size: 1.4rem;
+    }
+
+    .turno-precio {
+        text-align: left;
+        min-width: auto;
+    }
+
+    .filtros-fechas {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+.turno-acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 120px;
+}
+
+.btn-accion {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-reprogramar {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+    border: 1px solid #c5d8f8;
+}
+
+.btn-reprogramar:hover {
+    background-color: #d2e3fc;
+}
+
+.btn-cancelar {
+    background-color: #fbeaf0;
+    color: #c0392b;
+    border: 1px solid #e8c0c0;
+}
+
+.btn-cancelar:hover {
+    background-color: #f5d5d5;
+}
+
+.turno-actual {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+.alert-error {
+    background-color: #fbeaf0;
+    border: 1px solid #e8c0c0;
+    color: #c0392b;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.reprogramar-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.date-picker-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+    align-items: center;
+}
+
+.date-picker-form label {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.date-picker-form input[type="date"] {
+    padding: 10px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text-dark);
+}
+
+.date-picker-form input[type="date"]:focus {
+    outline: none;
+    border-color: #b5838d;
+}
+
+.slot-radio {
+    display: none;
+}
+
+.slot-card.slot-available:has(.slot-radio:checked) {
+    border-color: #b5838d;
+    background-color: #fbeaf0;
+    color: var(--text-dark);
+}
+
+.reprogramar-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.btn-reprogramar-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .turno-acciones {
+        flex-direction: row;
+        min-width: auto;
+    }
+}

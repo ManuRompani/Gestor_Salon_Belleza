@@ -1,0 +1,91 @@
+@using Gestor_Salon_Belleza.ViewModels
+@model List<ProfesionalTurnoViewModel>
+@{
+    ViewData["Title"] = "Mis Turnos - Glow & Style";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/mis-turnos.css" asp-append-version="true" />
+}
+
+<div class="turnos-wrapper">
+    <div class="turnos-hero">
+        <span class="subtitle">Panel del Profesional</span>
+        <h1>Mis Turnos</h1>
+        <p>Visualizá y administrá las citas agendadas con vos.</p>
+    </div>
+
+    <div class="filtros-container">
+        @if (TempData["Exito"] != null)
+        {
+            <div class="alert-exito">@TempData["Exito"]</div>
+        }
+        <form method="get" asp-action="MisTurnos" class="filtros-form">
+            <div class="filtros-tabs">
+                <a asp-action="MisTurnos" class="filter-tab @(ViewBag.EstadoFiltro == null ? "active" : "")">Todos</a>
+                <a asp-action="MisTurnos" asp-route-estado="activos" class="filter-tab @(ViewBag.EstadoFiltro == "activos" ? "active" : "")">Activos</a>
+                <a asp-action="MisTurnos" asp-route-estado="cancelados" class="filter-tab @(ViewBag.EstadoFiltro == "cancelados" ? "active" : "")">Cancelados</a>
+            </div>
+            <div class="filtros-fechas">
+                <label>
+                    Desde
+                    <input type="date" name="fechaDesde" value="@ViewBag.FechaDesde" />
+                </label>
+                <label>
+                    Hasta
+                    <input type="date" name="fechaHasta" value="@ViewBag.FechaHasta" />
+                </label>
+                <button type="submit" class="btn btn-secondary btn-filtro">Filtrar</button>
+                <a asp-action="MisTurnos" class="btn btn-secondary btn-filtro">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="turnos-list">
+            @foreach (var turno in Model)
+            {
+                <div class="turno-card @(turno.Estado == "Cancelado" ? "turno-cancelado" : "")">
+                    <div class="turno-fecha">
+                        <span class="turno-dia">@turno.FechaHora.ToString("dd")</span>
+                        <span class="turno-mes">@turno.FechaHora.ToString("MMM")</span>
+                        <span class="turno-hora">@turno.FechaHora.ToString("HH:mm")</span>
+                    </div>
+                    <div class="turno-info">
+                        <h3 class="turno-cliente">@turno.ClienteNombre</h3>
+                        <p class="turno-servicio">@turno.ServicioNombre</p>
+                        <p class="turno-duracion">@turno.DuracionMinutos min</p>
+                    </div>
+                    <div class="turno-estado">
+                        <span class="badge @(turno.Estado == "Activo" ? "badge-activo" : "badge-cancelado")">
+                            @turno.Estado
+                        </span>
+                        @if (turno.FechaCancelacion.HasValue)
+                        {
+                            <span class="turno-cancelacion">Cancelado el @turno.FechaCancelacion.Value.ToString("dd/MM/yyyy")</span>
+                        }
+                    </div>
+                    <div class="turno-precio">
+                        $@turno.Precio.ToString("N0")
+                    </div>
+                    @if (turno.Estado == "Activo")
+                    {
+                        <div class="turno-acciones">
+                            <a asp-action="ReprogramarTurno" asp-route-id="@turno.Id_Turno" class="btn-accion btn-reprogramar">Reprogramar</a>
+                            <form asp-action="CancelarTurno" asp-route-id="@turno.Id_Turno" method="post" onsubmit="return confirm('¿Cancelar este turno?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-accion btn-cancelar">Cancelar</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="turnos-empty">
+            <p>No tenés turnos agendados.</p>
+        </div>
+    }
+</div>

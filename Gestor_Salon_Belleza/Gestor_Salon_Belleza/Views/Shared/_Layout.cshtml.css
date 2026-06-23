@@ -1,48 +1,253 @@
 ﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+/* Etiqueta a */
+
+/*a {
+    color: #0077cc;
+}
 a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
+}*/
+
+/* Botones*/
+
+/*.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
 }
 
-a {
-  color: #0077cc;
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}*/
+
+
+/* Utilidades generales*/
+
+/*.border-top {
+    border-top: 1px solid #e5e5e5;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
-}
-
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
-}
-
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
 button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
+    font-size: 1rem;
+    line-height: inherit;
+}*/
+
+/* Footer */
+
+/*.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+}*/
+
+/* Auth logo*/
+
+/*.auth-logo{
+    text-decoration: none;
+    color: inherit;
+}*/
+
+/* NavBar */
+
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #fbf4f0;
+    color: #23263b;
+    font-family: "Montserrat", Arial, sans-serif;
 }
+
+/* HEADER */
+
+.header {
+    width: 100%;
+    min-height: 96px;
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(181, 131, 118, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 9%;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 10;
+}
+
+.logo a {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: #23263b;
+    text-decoration: none;
+}
+
+.nav-menu ul {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu a {
+    color: #23263b;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+    .nav-menu a:hover {
+        color: #b58376;
+    }
+
+.btn-nav {
+    border: 2px solid #23263b;
+    border-radius: 30px;
+    padding: 11px 26px;
+    font-weight: 600;
+}
+
+.btn-profile {
+    color: #23263b;
+}
+
+    .btn-profile:hover {
+        background-color: #23263b;
+        color: #ffffff;
+    }
+.btn-logout {
+    border: 2px solid #c0392b;
+    border-radius: 30px;
+    padding: 11px 26px;
+    background-color: transparent;
+    color: #c0392b;
+    font-family: "Montserrat", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .btn-logout:hover {
+        background-color: #c0392b;
+        color: #ffffff;
+    }
+/* MAIN */
+
+.page-content {
+    flex: 1;
+    width: 100%;
+    background-color: #fbf4f0;
+}
+
+/* FOOTER */
+
+.footer {
+    position: static;
+    width: 100%;
+    background-color: #ffffff;
+    border-top: 1px solid rgba(181, 131, 118, 0.12);
+    color: rgba(35, 38, 59, 0.45);
+    text-align: center;
+    padding: 28px 20px;
+    box-sizing: border-box;
+    white-space: normal;
+    line-height: normal;
+    margin-top: auto;
+}
+
+.footer-content p {
+    margin: 6px 0;
+    font-size: 13px;
+    font-weight: 300;
+}
+
+/* MENÚ RESPONSIVE */
+
+.menu-checkbox {
+    display: none;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+}
+
+    .hamburger span {
+        width: 26px;
+        height: 2px;
+        background-color: #23263b;
+        display: block;
+    }
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0 24px;
+    }
+
+    .logo a {
+        font-size: 28px;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-menu {
+        position: absolute;
+        top: 96px;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        border-bottom: 1px solid rgba(181, 131, 118, 0.18);
+        display: none;
+        padding: 24px 0;
+    }
+
+        .nav-menu ul {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+    .menu-checkbox:checked ~ .nav-menu {
+        display: block;
+    }
+
+    .btn-nav,
+    .btn-logout {
+        display: inline-block;
+        padding: 10px 24px;
+    }
+}
+
+

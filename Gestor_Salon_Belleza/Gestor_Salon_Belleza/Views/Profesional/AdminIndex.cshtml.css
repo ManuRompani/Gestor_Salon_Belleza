@@ -1,0 +1,12 @@
+﻿.back-link {
+    display: inline-block;
+    margin-top: 24px;
+    font-size: 0.85rem;
+    color: #a29791;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+    .back-link:hover {
+        color: #b5838d;
+    }
