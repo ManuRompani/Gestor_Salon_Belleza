@@ -48,7 +48,7 @@ namespace Gestor_Salon_Belleza.Controllers
 
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> ConverToProfesional(int id)
+            public async Task<IActionResult> ConvertToProfesional(int id)
             {
                 var usuario = await _context.Usuarios.FindAsync(id);
                 if (usuario == null) return NotFound();
@@ -57,10 +57,10 @@ namespace Gestor_Salon_Belleza.Controllers
                 TempData["Exito"] = "Rol actualizado a Profesional.";
                 return RedirectToAction("IndexUsuarios");
             }
-
+        
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> ConverToCliente(int id)
+            public async Task<IActionResult> ConvertToCliente(int id)
             {
                 var usuario = await _context.Usuarios.FindAsync(id);
                 if (usuario == null) return NotFound();
