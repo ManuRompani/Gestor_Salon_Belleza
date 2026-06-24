@@ -169,7 +169,7 @@ Cuando la aplicación arranca:
 Credenciales iniciales del admin semilla:
 
 - Email: `admin@glowstyle.com`
-- Password: `Admin123!`
+- Password: `admin123`
 
 La contraseña se guarda hasheada en base de datos.
 
